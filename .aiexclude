@@ -1,0 +1,9 @@
+*.iml
+*.json
+/.gradle
+/.kotlin
+/.idea
+/build
+/**/build
+local.properties
+generated
