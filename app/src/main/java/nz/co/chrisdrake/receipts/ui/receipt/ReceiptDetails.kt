@@ -48,7 +48,7 @@ fun ReceiptDetails(
     Column(
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        ReceiptImage(uri = viewState.uri, onClick = onClickImage)
+        ReceiptImage(uri = viewState.imageUri, onClick = onClickImage)
 
         DetailsSection(viewState = viewState)
 
@@ -180,7 +180,7 @@ private fun Preview_ReceiptDetails() {
         Box(modifier = Modifier.padding(16.dp)) {
             ReceiptDetails(
                 viewState = Details(
-                    uri = Uri.EMPTY,
+                    imageUri = Uri.EMPTY,
                     merchant = preview_InputFieldState(label = "Merchant"),
                     date = DateFieldState(onDateSelected = {}),
                     time = TimeFieldState(onTimeSelected = {}),

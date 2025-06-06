@@ -6,15 +6,16 @@ import nz.co.chrisdrake.receipts.ui.common.InputFieldState
 import nz.co.chrisdrake.receipts.ui.common.TimeFieldState
 
 data class ReceiptViewState(
-    val uri: Uri,
-    val onPictureResult: (saved: Boolean) -> Unit,
+    val title: String,
+    val createTempImageUri: () -> Uri,
+    val onPictureResult: (uri: Uri, saved: Boolean) -> Unit,
     val details: Details? = null,
     val loading: Boolean = false,
     val dismissed: Boolean = false,
 ) {
 
     data class Details(
-        val uri: Uri,
+        val imageUri: Uri,
         val merchant: InputFieldState,
         val date: DateFieldState,
         val time: TimeFieldState,

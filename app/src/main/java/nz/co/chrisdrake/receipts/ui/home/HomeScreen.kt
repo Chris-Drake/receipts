@@ -26,6 +26,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.serialization.Serializable
+import nz.co.chrisdrake.receipts.domain.ReceiptId
 import nz.co.chrisdrake.receipts.ui.theme.AppTheme
 
 @Serializable
@@ -34,7 +35,7 @@ object HomeRoute
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel = viewModel(),
-    navigateToReceipt: () -> Unit,
+    navigateToReceipt: (id: ReceiptId?) -> Unit,
 ) {
     val viewState by viewModel.viewState.collectAsState()
 
@@ -47,11 +48,11 @@ fun HomeScreen(
 @Composable
 private fun Content(
     viewState: HomeViewState,
-    navigateToReceipt: () -> Unit,
+    navigateToReceipt: (id: ReceiptId?) -> Unit,
 ) {
     Scaffold(
         floatingActionButton = {
-            FloatingActionButton(onClick = navigateToReceipt) {
+            FloatingActionButton(onClick = { navigateToReceipt(null) }) {
                 Icon(
                     imageVector = Icons.Default.Add,
                     contentDescription = "Add",
@@ -80,7 +81,10 @@ private fun Content(
                     items(viewState.receipts, key = ReceiptListItem::id) {
                         ReceiptListItem(
                             receipt = it,
-                            modifier = Modifier.fillMaxWidth().animateItem(),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .animateItem(),
+                            onClick = { navigateToReceipt(it.id) },
                         )
                     }
 

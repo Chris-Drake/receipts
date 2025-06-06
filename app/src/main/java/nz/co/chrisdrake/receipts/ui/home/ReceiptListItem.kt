@@ -35,8 +35,15 @@ data class ReceiptListItem(
 )
 
 @Composable
-fun ReceiptListItem(receipt: ReceiptListItem, modifier: Modifier = Modifier) {
-    Card(modifier = modifier) {
+fun ReceiptListItem(
+    receipt: ReceiptListItem,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit = {},
+) {
+    Card(
+        onClick = onClick,
+        modifier = modifier,
+    ) {
         Column(
             modifier = Modifier.padding(16.dp)
         ) {

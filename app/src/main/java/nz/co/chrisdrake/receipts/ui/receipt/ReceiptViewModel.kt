@@ -1,5 +1,6 @@
 package nz.co.chrisdrake.receipts.ui.receipt
 
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -7,10 +8,13 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import nz.co.chrisdrake.receipts.DependencyRegistry.get
+import nz.co.chrisdrake.receipts.domain.GetReceipt
 import nz.co.chrisdrake.receipts.domain.GetTempImageUri
 import nz.co.chrisdrake.receipts.domain.Receipt
+import nz.co.chrisdrake.receipts.domain.ReceiptId
 import nz.co.chrisdrake.receipts.domain.ReceiptItem
 import nz.co.chrisdrake.receipts.domain.SaveReceipt
+import nz.co.chrisdrake.receipts.domain.UpdateReceipt
 import nz.co.chrisdrake.receipts.ui.common.DateFieldState
 import nz.co.chrisdrake.receipts.ui.common.InputFieldState
 import nz.co.chrisdrake.receipts.ui.common.TimeFieldState
@@ -22,20 +26,40 @@ import java.util.UUID
 import kotlin.coroutines.cancellation.CancellationException
 
 class ReceiptViewModel(
+    existingId: ReceiptId?,
     getTempImageUri: GetTempImageUri = get(),
+    private val getReceipt: GetReceipt = get(),
     private val saveReceipt: SaveReceipt = get(),
+    private val updateReceipt: UpdateReceipt = get(),
 ) : ViewModel() {
+
+    private var existingReceipt: Receipt? = null
 
     private val _viewState = MutableStateFlow(
         ReceiptViewState(
-            uri = getTempImageUri(),
+            title = if (existingId == null) "New Receipt" else "Receipt",
+            createTempImageUri = { getTempImageUri() },
             onPictureResult = ::onPictureResult,
         )
     )
 
     val viewState: StateFlow<ReceiptViewState> = _viewState
 
-    private fun onPictureResult(saved: Boolean) {
+    init {
+        existingId?.let(::loadExistingReceipt)
+    }
+
+    private fun loadExistingReceipt(id: ReceiptId) {
+        _viewState.update { it.copy(loading = true) }
+
+        viewModelScope.launch {
+            existingReceipt = getReceipt(id = id).also {
+                initializeDetails(receipt = it, imageUri = it.imageUri)
+            }
+        }
+    }
+
+    private fun onPictureResult(uri: Uri, saved: Boolean) {
         if (!saved) {
             if (viewState.value.details == null) {
                 _viewState.update { it.copy(dismissed = true) }
@@ -44,17 +68,32 @@ class ReceiptViewModel(
             return
         }
 
-        _viewState.update {
-            it.copy(
+        if (existingReceipt == null) {
+            initializeDetails(receipt = null, imageUri = uri)
+        } else {
+            _viewState.update { it.copy(details = it.details?.copy(imageUri = uri)) }
+        }
+    }
+
+    private fun initializeDetails(receipt: Receipt?, imageUri: Uri) {
+        _viewState.update { currentState ->
+            currentState.copy(
                 details = Details(
-                    uri = it.uri,
+                    imageUri = imageUri,
                     merchant = InputFieldState(
                         label = "Merchant",
+                        value = receipt?.merchant ?: "",
                         onValueChanged = ::onMerchantChanged
                     ),
-                    date = DateFieldState(onDateSelected = ::onDateSelected),
-                    time = TimeFieldState(onTimeSelected = ::onTimeSelected),
-                    items = listOf(createItem()),
+                    date = DateFieldState(
+                        selection = receipt?.date,
+                        onDateSelected = ::onDateSelected
+                    ),
+                    time = TimeFieldState(
+                        selection = receipt?.time,
+                        onTimeSelected = ::onTimeSelected
+                    ),
+                    items = receipt?.items?.map { createItem(from = it) } ?: listOf(createItem()),
                     onClickSave = ::onClickSave,
                     onClickAddItem = ::onClickAddItem,
                 )
@@ -78,17 +117,17 @@ class ReceiptViewModel(
                     amount = it.amount.sanitizedValue?.toBigDecimalOrNull() ?: return@mapNotNull null,
                 )
             }
-            .takeIf { it.isNotEmpty() }
+            .takeIf { it.isNotEmpty() && it.size == details.items.size }
             ?: return
 
         val receipt = Receipt(
-            id = UUID.randomUUID().toString(),
-            imageUri = details.uri,
+            id = existingReceipt?.id ?: UUID.randomUUID().toString(),
+            imageUri = details.imageUri,
             merchant = merchant,
             date = date,
             time = time,
             items = items,
-            createdAt = System.currentTimeMillis(),
+            createdAt = existingReceipt?.createdAt ?: System.currentTimeMillis(),
             updatedAt = System.currentTimeMillis(),
         )
 
@@ -96,7 +135,11 @@ class ReceiptViewModel(
             _viewState.update { it.copy(loading = true) }
 
             try {
-                saveReceipt(receipt)
+                if (existingReceipt == null) {
+                    saveReceipt(receipt)
+                } else {
+                    updateReceipt(receipt)
+                }
             } catch (cancellation: CancellationException) {
                 throw cancellation
             } catch (exception: Exception) {
@@ -130,19 +173,21 @@ class ReceiptViewModel(
     private val InputFieldState.sanitizedValue: String?
         get() = value.trim().takeUnless(String::isEmpty)
 
-    private fun createItem(): Item {
-        val id = UUID.randomUUID().toString()
+    private fun createItem(from: ReceiptItem? = null): Item {
+        val id = from?.id ?: UUID.randomUUID().toString()
 
         return Item(
             id = id,
             name = InputFieldState(
                 label = "Item",
+                value = from?.name ?: "",
                 onValueChanged = { value ->
                     updateItem(id) { it.copy(name = it.name.copy(value = value, error = null)) }
                 }
             ),
             amount = InputFieldState(
                 label = "Amount",
+                value = from?.amount?.toString() ?: "",
                 onValueChanged = { value ->
                     if (value.isNotEmpty() && value.toBigDecimalOrNull() == null) {
                         return@InputFieldState

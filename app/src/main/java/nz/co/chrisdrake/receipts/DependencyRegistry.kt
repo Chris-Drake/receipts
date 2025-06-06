@@ -4,9 +4,11 @@ import android.app.Application
 import androidx.room.Room
 import nz.co.chrisdrake.receipts.data.ReceiptDatabase
 import nz.co.chrisdrake.receipts.data.ReceiptRepository
+import nz.co.chrisdrake.receipts.domain.GetReceipt
 import nz.co.chrisdrake.receipts.domain.GetReceipts
 import nz.co.chrisdrake.receipts.domain.GetTempImageUri
 import nz.co.chrisdrake.receipts.domain.SaveReceipt
+import nz.co.chrisdrake.receipts.domain.UpdateReceipt
 import kotlin.reflect.KClass
 
 object DependencyRegistry {
@@ -34,7 +36,11 @@ object DependencyRegistry {
 
         register { SaveReceipt(repository = get()) }
 
+        register { UpdateReceipt(repository = get()) }
+
         register { GetReceipts(repository = get()) }
+
+        register { GetReceipt(repository = get()) }
     }
 
     private inline fun <reified T : Any> register(crossinline block: () -> T) {
