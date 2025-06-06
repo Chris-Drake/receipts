@@ -17,16 +17,13 @@ import java.time.Instant
 import java.time.LocalDate
 import java.time.Month
 import java.time.ZoneOffset
-import java.time.format.DateTimeFormatter
-
-private val dateFormatter = DateTimeFormatter.ofPattern("d MMM yyyy")
 
 data class DateFieldState(
     val selection: LocalDate? = null,
     val error: String? = null,
     val onDateSelected: (LocalDate) -> Unit,
 ) {
-    val formattedValue: String = selection?.let(dateFormatter::format) ?: ""
+    val formattedValue: String = selection?.let(DATE_FORMATTER::format) ?: ""
 }
 
 @Composable

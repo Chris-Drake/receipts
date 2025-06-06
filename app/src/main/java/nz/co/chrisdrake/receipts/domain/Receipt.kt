@@ -18,6 +18,8 @@ data class Receipt(
     val createdAt: Long,
     val updatedAt: Long,
 ) {
+    val totalAmount: BigDecimal = items.sumOf { it.amount }
+
     init {
         check(items.isNotEmpty()) { "Receipt must have at least one item" }
     }

@@ -14,15 +14,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import nz.co.chrisdrake.receipts.ui.theme.AppTheme
 import java.time.LocalTime
-import java.time.format.DateTimeFormatter
-
-private val timeFormatter = DateTimeFormatter.ofPattern("h:mm a")
 
 data class TimeFieldState(
     val selection: LocalTime? = null,
     val onTimeSelected: (LocalTime) -> Unit,
 ) {
-    val formattedValue: String = selection?.let(timeFormatter::format) ?: ""
+    val formattedValue: String = selection?.let(TIME_FORMATTER::format) ?: ""
 }
 
 @Composable
