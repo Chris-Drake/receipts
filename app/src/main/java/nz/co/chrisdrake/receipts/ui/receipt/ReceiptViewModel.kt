@@ -1,12 +1,16 @@
 package nz.co.chrisdrake.receipts.ui.receipt
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import nz.co.chrisdrake.receipts.DependencyRegistry.get
 import nz.co.chrisdrake.receipts.domain.GetTempImageUri
 import nz.co.chrisdrake.receipts.domain.Receipt
 import nz.co.chrisdrake.receipts.domain.ReceiptItem
+import nz.co.chrisdrake.receipts.domain.SaveReceipt
 import nz.co.chrisdrake.receipts.ui.common.DateFieldState
 import nz.co.chrisdrake.receipts.ui.common.InputFieldState
 import nz.co.chrisdrake.receipts.ui.common.TimeFieldState
@@ -15,9 +19,11 @@ import nz.co.chrisdrake.receipts.ui.receipt.ReceiptViewState.Item
 import java.time.LocalDate
 import java.time.LocalTime
 import java.util.UUID
+import kotlin.coroutines.cancellation.CancellationException
 
 class ReceiptViewModel(
-    getTempImageUri: GetTempImageUri,
+    getTempImageUri: GetTempImageUri = get(),
+    private val saveReceipt: SaveReceipt = get(),
 ) : ViewModel() {
 
     private val _viewState = MutableStateFlow(
@@ -77,7 +83,7 @@ class ReceiptViewModel(
 
         val receipt = Receipt(
             id = UUID.randomUUID().toString(),
-            uri = details.uri,
+            imageUri = details.uri,
             merchant = merchant,
             date = date,
             time = time,
@@ -86,9 +92,19 @@ class ReceiptViewModel(
             updatedAt = System.currentTimeMillis(),
         )
 
-        // TODO: Save
+        viewModelScope.launch {
+            _viewState.update { it.copy(loading = true) }
 
-        _viewState.update { it.copy(dismissed = true) }
+            try {
+                saveReceipt(receipt)
+            } catch (cancellation: CancellationException) {
+                throw cancellation
+            } catch (exception: Exception) {
+                TODO()
+            }
+
+            _viewState.update { it.copy(dismissed = true) }
+        }
     }
 
     private fun validateFields() {

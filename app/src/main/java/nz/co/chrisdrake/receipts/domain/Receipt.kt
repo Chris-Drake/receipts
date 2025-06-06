@@ -5,9 +5,12 @@ import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalTime
 
+typealias ReceiptId = String
+typealias ReceiptItemId = String
+
 data class Receipt(
-    val id: String,
-    val uri: Uri,
+    val id: ReceiptId,
+    val imageUri: Uri,
     val merchant: String,
     val date: LocalDate,
     val time: LocalTime?,
@@ -21,7 +24,7 @@ data class Receipt(
 }
 
 data class ReceiptItem(
-    val id: String,
+    val id: ReceiptItemId,
     val name: String,
     val amount: BigDecimal,
 )

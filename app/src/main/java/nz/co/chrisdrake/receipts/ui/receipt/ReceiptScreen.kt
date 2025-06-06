@@ -1,6 +1,5 @@
 package nz.co.chrisdrake.receipts.ui.receipt
 
-import android.content.Context
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts.TakePicture
@@ -21,12 +20,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.serialization.Serializable
-import nz.co.chrisdrake.receipts.domain.GetTempImageUri
 import nz.co.chrisdrake.receipts.ui.theme.AppTheme
 
 @Serializable
@@ -34,13 +31,8 @@ object ReceiptRoute
 
 @Composable
 fun ReceiptScreen(
-    context: Context = LocalContext.current,
     dismiss: () -> Unit,
-    viewModel: ReceiptViewModel = viewModel {
-        ReceiptViewModel(
-            getTempImageUri = GetTempImageUri(context),
-        )
-    },
+    viewModel: ReceiptViewModel = viewModel(),
 ) {
     val viewState = viewModel.viewState.collectAsState().value
 

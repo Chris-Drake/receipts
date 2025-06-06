@@ -1,0 +1,126 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 1,
+    "identityHash": "a714d507c7d17b10b1b6c66db7980eb3",
+    "entities": [
+      {
+        "tableName": "receipts",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`receipt_id` TEXT NOT NULL, `receipt_image_uri` TEXT NOT NULL, `receipt_merchant` TEXT NOT NULL, `receipt_date` TEXT NOT NULL, `receipt_time` TEXT, `receipt_created_at` INTEGER NOT NULL, `receipt_updated_at` INTEGER NOT NULL, PRIMARY KEY(`receipt_id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "receipt_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "imageUri",
+            "columnName": "receipt_image_uri",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "merchant",
+            "columnName": "receipt_merchant",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "date",
+            "columnName": "receipt_date",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "time",
+            "columnName": "receipt_time",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "createdAt",
+            "columnName": "receipt_created_at",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "updatedAt",
+            "columnName": "receipt_updated_at",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "receipt_id"
+          ]
+        }
+      },
+      {
+        "tableName": "receipt_items",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`receipt_item_id` TEXT NOT NULL, `receipt_item_receipt_id` TEXT NOT NULL, `receipt_item_name` TEXT NOT NULL, `receipt_item_amount` TEXT NOT NULL, PRIMARY KEY(`receipt_item_id`), FOREIGN KEY(`receipt_item_receipt_id`) REFERENCES `receipts`(`receipt_id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "receipt_item_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "receiptId",
+            "columnName": "receipt_item_receipt_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "receipt_item_name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "amount",
+            "columnName": "receipt_item_amount",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "receipt_item_id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_receipt_items_receipt_item_receipt_id",
+            "unique": false,
+            "columnNames": [
+              "receipt_item_receipt_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_receipt_items_receipt_item_receipt_id` ON `${TABLE_NAME}` (`receipt_item_receipt_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "receipts",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "receipt_item_receipt_id"
+            ],
+            "referencedColumns": [
+              "receipt_id"
+            ]
+          }
+        ]
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'a714d507c7d17b10b1b6c66db7980eb3')"
+    ]
+  }
+}

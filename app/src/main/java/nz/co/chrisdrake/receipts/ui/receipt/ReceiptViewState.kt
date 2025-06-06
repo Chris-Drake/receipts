@@ -9,6 +9,7 @@ data class ReceiptViewState(
     val uri: Uri,
     val onPictureResult: (saved: Boolean) -> Unit,
     val details: Details? = null,
+    val loading: Boolean = false,
     val dismissed: Boolean = false,
 ) {
 

@@ -186,7 +186,7 @@ private fun Preview_ReceiptDetails() {
                     time = TimeFieldState(onTimeSelected = {}),
                     items = List(2) { index ->
                         Item(
-                            id = index,
+                            id = index.toString(),
                             name = preview_InputFieldState(label = "Item"),
                             amount = preview_InputFieldState(label = "Amount"),
                             onClickDelete = {},
