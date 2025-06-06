@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import nz.co.chrisdrake.receipts.DependencyRegistry.get
+import nz.co.chrisdrake.receipts.domain.CopyPictureToInternalStorage
 import nz.co.chrisdrake.receipts.domain.GetReceipt
 import nz.co.chrisdrake.receipts.domain.GetTempImageUri
 import nz.co.chrisdrake.receipts.domain.Receipt
@@ -28,6 +29,7 @@ import kotlin.coroutines.cancellation.CancellationException
 class ReceiptViewModel(
     existingId: ReceiptId?,
     getTempImageUri: GetTempImageUri = get(),
+    private val copyPictureToInternalStorage: CopyPictureToInternalStorage = get(),
     private val getReceipt: GetReceipt = get(),
     private val saveReceipt: SaveReceipt = get(),
     private val updateReceipt: UpdateReceipt = get(),
@@ -120,19 +122,22 @@ class ReceiptViewModel(
             .takeIf { it.isNotEmpty() && it.size == details.items.size }
             ?: return
 
-        val receipt = Receipt(
-            id = existingReceipt?.id ?: UUID.randomUUID().toString(),
-            imageUri = details.imageUri,
-            merchant = merchant,
-            date = date,
-            time = time,
-            items = items,
-            createdAt = existingReceipt?.createdAt ?: System.currentTimeMillis(),
-            updatedAt = System.currentTimeMillis(),
-        )
-
         viewModelScope.launch {
             _viewState.update { it.copy(loading = true) }
+
+            val id = existingReceipt?.id ?: UUID.randomUUID().toString()
+            val imageUri = copyPictureToInternalStorage(uri = details.imageUri, receiptId = id)
+
+            val receipt = Receipt(
+                id = id,
+                imageUri = imageUri,
+                merchant = merchant,
+                date = date,
+                time = time,
+                items = items,
+                createdAt = existingReceipt?.createdAt ?: System.currentTimeMillis(),
+                updatedAt = System.currentTimeMillis(),
+            )
 
             try {
                 if (existingReceipt == null) {
