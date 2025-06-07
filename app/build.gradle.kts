@@ -87,5 +87,6 @@ dependencies {
     implementation(libs.coil.network.okhttp)
 
     implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.auth)
     implementation(libs.firebase.crashlytics)
 }

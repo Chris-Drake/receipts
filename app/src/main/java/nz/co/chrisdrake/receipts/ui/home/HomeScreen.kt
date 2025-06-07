@@ -12,8 +12,12 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -35,12 +39,14 @@ object HomeRoute
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel = viewModel(),
+    navigateToProfile: () -> Unit,
     navigateToReceipt: (id: ReceiptId?) -> Unit,
 ) {
     val viewState by viewModel.viewState.collectAsState()
 
     Content(
         viewState = viewState,
+        navigateToProfile = navigateToProfile,
         navigateToReceipt = navigateToReceipt,
     )
 }
@@ -48,9 +54,13 @@ fun HomeScreen(
 @Composable
 private fun Content(
     viewState: HomeViewState,
+    navigateToProfile: () -> Unit,
     navigateToReceipt: (id: ReceiptId?) -> Unit,
 ) {
     Scaffold(
+        topBar = {
+            TopBar(onClickProfile = navigateToProfile)
+        },
         floatingActionButton = {
             FloatingActionButton(onClick = { navigateToReceipt(null) }) {
                 Icon(
@@ -97,6 +107,24 @@ private fun Content(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun TopBar(onClickProfile: () -> Unit) {
+    CenterAlignedTopAppBar(
+        title = {
+            Text(text = "Receipts")
+        },
+        actions = {
+            IconButton(onClick = onClickProfile) {
+                Icon(
+                    imageVector = Icons.Default.Person,
+                    contentDescription = "Profile",
+                )
+            }
+        },
+    )
+}
+
 @Composable
 private fun EmptyState(
     modifier: Modifier = Modifier,
@@ -118,6 +146,7 @@ private fun Content_WithReceipts() {
     AppTheme {
         Content(
             viewState = HomeViewState(receipts = listOf(preview_ReceiptListItem())),
+            navigateToProfile = {},
             navigateToReceipt = {},
         )
     }
@@ -129,6 +158,7 @@ private fun Content_Empty() {
     AppTheme {
         Content(
             viewState = HomeViewState(receipts = emptyList()),
+            navigateToProfile = {},
             navigateToReceipt = {},
         )
     }

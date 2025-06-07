@@ -6,6 +6,12 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.autofill.ContentType
+import androidx.compose.ui.semantics.contentType
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import nz.co.chrisdrake.receipts.ui.theme.AppTheme
 
@@ -21,6 +27,7 @@ fun InputField(
     field: InputFieldState,
     modifier: Modifier = Modifier,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    visualTransformation: VisualTransformation = VisualTransformation.None,
 ) {
     val supportingText: @Composable (() -> Unit)? = field.error?.let {
         { Text(it) }
@@ -35,6 +42,26 @@ fun InputField(
         isError = field.error != null,
         supportingText = supportingText,
         keyboardOptions = keyboardOptions,
+        visualTransformation = visualTransformation,
+    )
+}
+
+@Composable
+fun EmailInputField(field: InputFieldState) {
+    InputField(
+        field = field,
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+        modifier = Modifier.semantics { contentType = ContentType.EmailAddress },
+    )
+}
+
+@Composable
+fun PasswordInputField(field: InputFieldState) {
+    InputField(
+        field = field,
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+        visualTransformation = PasswordVisualTransformation(),
+        modifier = Modifier.semantics { contentType = ContentType.Password },
     )
 }
 
