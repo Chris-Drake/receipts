@@ -3,6 +3,8 @@ package nz.co.chrisdrake.receipts.ui.receipt
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.crashlytics.ktx.crashlytics
+import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -17,6 +19,7 @@ import nz.co.chrisdrake.receipts.domain.Receipt
 import nz.co.chrisdrake.receipts.domain.ReceiptId
 import nz.co.chrisdrake.receipts.domain.ReceiptItem
 import nz.co.chrisdrake.receipts.domain.SaveReceipt
+import nz.co.chrisdrake.receipts.domain.ScanImage
 import nz.co.chrisdrake.receipts.domain.UpdateReceipt
 import nz.co.chrisdrake.receipts.ui.common.DateFieldState
 import nz.co.chrisdrake.receipts.ui.common.InputFieldState
@@ -32,6 +35,7 @@ class ReceiptViewModel(
     private val existingId: ReceiptId?,
     getTempImageUri: GetTempImageUri = get(),
     private val copyPictureToInternalStorage: CopyPictureToInternalStorage = get(),
+    private val scanImage: ScanImage = get(),
     private val getReceipt: GetReceipt = get(),
     private val saveReceipt: SaveReceipt = get(),
     private val updateReceipt: UpdateReceipt = get(),
@@ -77,6 +81,7 @@ class ReceiptViewModel(
 
         if (existingReceipt == null) {
             initializeDetails(receipt = null, imageUri = uri)
+            attemptScan(uri)
         } else {
             _viewState.update { it.copy(details = it.details?.copy(imageUri = uri)) }
         }
@@ -107,6 +112,30 @@ class ReceiptViewModel(
                 )
             )
         }
+    }
+
+    private fun attemptScan(imageUri: Uri) = viewModelScope.launch {
+        _viewState.update { it.copy(loadingMessage = "Scanning…") }
+
+        try {
+            val scanResult = scanImage(imageUri = imageUri)
+
+            updateDetails {
+                it.copy(
+                    merchant = it.merchant.copy(value = scanResult.merchant ?: it.merchant.value),
+                    date = it.date.copy(selection = scanResult.date ?: it.date.selection),
+                    time = it.time.copy(selection = scanResult.time ?: it.time.selection),
+                    items = scanResult.items?.map { item -> createItem(from = item) } ?: it.items,
+                )
+            }
+        } catch (cancellation: CancellationException) {
+            throw cancellation
+        } catch (exception: Exception) {
+            Firebase.crashlytics.recordException(exception)
+            // TODO: Show error, allow retry
+        }
+
+        _viewState.update { it.copy(loadingMessage = null) }
     }
 
     private fun onClickSave() {

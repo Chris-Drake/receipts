@@ -162,7 +162,7 @@ private fun LoadingDialog(text: String) {
             tonalElevation = AlertDialogDefaults.TonalElevation,
         ) {
             Row(
-                modifier = Modifier.padding(16.dp),
+                modifier = Modifier.padding(32.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
             ) {

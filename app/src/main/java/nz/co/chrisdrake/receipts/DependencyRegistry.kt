@@ -15,6 +15,7 @@ import nz.co.chrisdrake.receipts.domain.GetReceipts
 import nz.co.chrisdrake.receipts.domain.GetTempImageUri
 import nz.co.chrisdrake.receipts.domain.PerformSync
 import nz.co.chrisdrake.receipts.domain.SaveReceipt
+import nz.co.chrisdrake.receipts.domain.ScanImage
 import nz.co.chrisdrake.receipts.domain.SignIn
 import nz.co.chrisdrake.receipts.domain.SignOut
 import nz.co.chrisdrake.receipts.domain.SignUp
@@ -49,6 +50,8 @@ object DependencyRegistry {
         register { GetPictureFile(context = application) }
 
         register { CopyPictureToInternalStorage(context = application, getPictureFile = get()) }
+
+        register { ScanImage(context = application) }
 
         register { SaveReceipt(repository = get()) }
 

@@ -1,5 +1,6 @@
 package nz.co.chrisdrake.receipts.data
 
+import androidx.annotation.Keep
 import androidx.room.ColumnInfo
 import androidx.room.Embedded
 import androidx.room.Entity
@@ -53,6 +54,7 @@ data class ReceiptWithItemsEntity(
     val items: List<ReceiptItemEntity>,
 )
 
+@Keep
 data class RemoteReceiptEntity(
     @get:PropertyName("id") @set:PropertyName("id") var id: String = "",
     @get:PropertyName("image_path") @set:PropertyName("image_path") var imagePath: String = "",
@@ -64,6 +66,7 @@ data class RemoteReceiptEntity(
     @get:PropertyName("updated_at") @set:PropertyName("updated_at") var updatedAt: Long = 0,
 )
 
+@Keep
 data class RemoteReceiptItemEntity(
     @get:PropertyName("id") @set:PropertyName("id") var id: String = "",
     @get:PropertyName("name") @set:PropertyName("name") var name: String = "",
