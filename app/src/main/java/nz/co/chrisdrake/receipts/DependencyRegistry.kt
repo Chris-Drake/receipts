@@ -9,9 +9,11 @@ import nz.co.chrisdrake.receipts.domain.BackupReceiptsAsync
 import nz.co.chrisdrake.receipts.domain.CopyPictureToInternalStorage
 import nz.co.chrisdrake.receipts.domain.DeleteReceipt
 import nz.co.chrisdrake.receipts.domain.GetCurrentUser
+import nz.co.chrisdrake.receipts.domain.GetPictureFile
 import nz.co.chrisdrake.receipts.domain.GetReceipt
 import nz.co.chrisdrake.receipts.domain.GetReceipts
 import nz.co.chrisdrake.receipts.domain.GetTempImageUri
+import nz.co.chrisdrake.receipts.domain.PerformSync
 import nz.co.chrisdrake.receipts.domain.SaveReceipt
 import nz.co.chrisdrake.receipts.domain.SignIn
 import nz.co.chrisdrake.receipts.domain.SignOut
@@ -44,7 +46,9 @@ object DependencyRegistry {
 
         register { GetTempImageUri(context = application) }
 
-        register { CopyPictureToInternalStorage(context = application) }
+        register { GetPictureFile(context = application) }
+
+        register { CopyPictureToInternalStorage(context = application, getPictureFile = get()) }
 
         register { SaveReceipt(repository = get()) }
 
@@ -60,7 +64,9 @@ object DependencyRegistry {
 
         register { GetCurrentUser() }
 
-        register { SignIn() }
+        register { PerformSync(receiptRepository = get(), remoteDataSource = get(), getCurrentUser = get(), getPictureFile = get()) }
+
+        register { SignIn(performSync = get()) }
 
         register { SignUp() }
 

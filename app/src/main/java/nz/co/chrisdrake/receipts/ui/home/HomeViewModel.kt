@@ -8,12 +8,14 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import nz.co.chrisdrake.receipts.DependencyRegistry.get
 import nz.co.chrisdrake.receipts.domain.GetReceipts
+import nz.co.chrisdrake.receipts.domain.PerformSync
 import nz.co.chrisdrake.receipts.domain.Receipt
 import nz.co.chrisdrake.receipts.ui.common.DATE_FORMATTER
 import nz.co.chrisdrake.receipts.ui.common.TIME_FORMATTER
 
 class HomeViewModel(
     private val getReceipts: GetReceipts = get(),
+    performSync: PerformSync = get(),
 ) : ViewModel() {
 
     private val _viewState = MutableStateFlow(HomeViewState())
@@ -22,6 +24,7 @@ class HomeViewModel(
 
     init {
         loadReceipts()
+        performSync()
     }
 
     private fun loadReceipts() = viewModelScope.launch {

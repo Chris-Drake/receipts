@@ -1,11 +1,11 @@
 package nz.co.chrisdrake.receipts.data
 
-import androidx.room.Entity
-import androidx.room.PrimaryKey
-import androidx.room.ForeignKey
-import androidx.room.Index
 import androidx.room.ColumnInfo
 import androidx.room.Embedded
+import androidx.room.Entity
+import androidx.room.ForeignKey
+import androidx.room.Index
+import androidx.room.PrimaryKey
 import androidx.room.Relation
 import com.google.firebase.firestore.PropertyName
 import nz.co.chrisdrake.receipts.domain.BackupStatus
@@ -54,18 +54,18 @@ data class ReceiptWithItemsEntity(
 )
 
 data class RemoteReceiptEntity(
-    @PropertyName("id") val id: String,
-    @PropertyName("image_path") val imagePath: String,
-    @PropertyName("merchant") val merchant: String,
-    @PropertyName("date") val date: String,
-    @PropertyName("time") val time: String?,
-    @PropertyName("items") val items: List<RemoteReceiptItemEntity>,
-    @PropertyName("created_at") val createdAt: Long,
-    @PropertyName("updated_at") val updatedAt: Long,
+    @get:PropertyName("id") @set:PropertyName("id") var id: String = "",
+    @get:PropertyName("image_path") @set:PropertyName("image_path") var imagePath: String = "",
+    @get:PropertyName("merchant") @set:PropertyName("merchant") var merchant: String = "",
+    @get:PropertyName("date") @set:PropertyName("date") var date: String = "",
+    @get:PropertyName("time") @set:PropertyName("time") var time: String? = null,
+    @get:PropertyName("items") @set:PropertyName("items") var items: List<RemoteReceiptItemEntity> = emptyList(),
+    @get:PropertyName("created_at") @set:PropertyName("created_at") var createdAt: Long = 0,
+    @get:PropertyName("updated_at") @set:PropertyName("updated_at") var updatedAt: Long = 0,
 )
 
 data class RemoteReceiptItemEntity(
-    @PropertyName("id") val id: String,
-    @PropertyName("name") val name: String,
-    @PropertyName("amount") val amount: String,
+    @get:PropertyName("id") @set:PropertyName("id") var id: String = "",
+    @get:PropertyName("name") @set:PropertyName("name") var name: String = "",
+    @get:PropertyName("amount") @set:PropertyName("amount") var amount: String = "",
 )

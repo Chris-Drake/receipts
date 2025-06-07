@@ -20,8 +20,8 @@ class ReceiptRepository(
         }
     }
 
-    suspend fun getReceipt(id: ReceiptId): Receipt {
-        return dao.getReceipt(id = id).toDomain()
+    suspend fun getReceipt(id: ReceiptId): Receipt? {
+        return dao.getReceipt(id = id)?.toDomain()
     }
 
     suspend fun saveReceipt(receipt: Receipt) {

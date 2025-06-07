@@ -18,7 +18,7 @@ interface ReceiptDao {
 
     @Transaction
     @Query("SELECT * FROM receipts WHERE receipt_id = :id")
-    suspend fun getReceipt(id: ReceiptId): ReceiptWithItemsEntity
+    suspend fun getReceipt(id: ReceiptId): ReceiptWithItemsEntity?
 
     @Insert
     suspend fun insertReceipt(receipt: ReceiptEntity)

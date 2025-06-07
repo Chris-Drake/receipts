@@ -2,6 +2,7 @@ package nz.co.chrisdrake.receipts.data
 
 import android.net.Uri
 import androidx.core.net.toFile
+import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -9,8 +10,15 @@ import com.google.firebase.storage.ktx.storage
 import kotlinx.coroutines.tasks.await
 import nz.co.chrisdrake.receipts.domain.Receipt
 import nz.co.chrisdrake.receipts.domain.ReceiptId
+import java.io.File
 
 class RemoteDataSource {
+
+    suspend fun getReceipts(userId: String): List<Receipt> {
+        return getReceiptsCollectionRef(userId).get().await().map { document ->
+            document.toObject(RemoteReceiptEntity::class.java).toDomain()
+        }
+    }
 
     suspend fun saveReceipt(userId: String, receipt: Receipt) {
         val imagePath = storeImage(
@@ -33,6 +41,10 @@ class RemoteDataSource {
         return imageRef.path
     }
 
+    suspend fun getImage(path: String, destinationFile: File) {
+        Firebase.storage.reference.child(path).getFile(destinationFile).await()
+    }
+
     suspend fun deleteReceipt(userId: String, id: ReceiptId) {
         val documentRef = getReceiptDocumentRef(userId = userId, receiptId = id)
 
@@ -41,10 +53,13 @@ class RemoteDataSource {
         }
     }
 
-    private fun getReceiptDocumentRef(userId: String, receiptId: ReceiptId): DocumentReference {
+    private fun getReceiptsCollectionRef(userId: String): CollectionReference {
         return Firebase.firestore.collection("users")
             .document(userId)
             .collection("receipts")
-            .document(receiptId)
+    }
+
+    private fun getReceiptDocumentRef(userId: String, receiptId: ReceiptId): DocumentReference {
+        return getReceiptsCollectionRef(userId = userId).document(receiptId)
     }
 }

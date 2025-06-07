@@ -1,8 +1,11 @@
 package nz.co.chrisdrake.receipts.data
 
 import androidx.core.net.toUri
+import nz.co.chrisdrake.receipts.domain.BackupStatus
 import nz.co.chrisdrake.receipts.domain.Receipt
 import nz.co.chrisdrake.receipts.domain.ReceiptItem
+import java.time.LocalDate
+import java.time.LocalTime
 
 fun ReceiptEntity.toDomain(items: List<ReceiptItemEntity>): Receipt {
     return Receipt(
@@ -71,5 +74,25 @@ fun Receipt.toRemoteEntity(imagePath: String): RemoteReceiptEntity {
         },
         createdAt = createdAt,
         updatedAt = updatedAt,
+    )
+}
+
+fun RemoteReceiptEntity.toDomain(): Receipt {
+    return Receipt(
+        id = id,
+        imageUri = imagePath.toUri(),
+        merchant = merchant,
+        date = LocalDate.parse(date),
+        time = time?.let { LocalTime.parse(it) },
+        items = items.map {
+            ReceiptItem(
+                id = it.id,
+                name = it.name,
+                amount = it.amount.toBigDecimal(),
+            )
+        },
+        createdAt = createdAt,
+        updatedAt = updatedAt,
+        backUpStatus = BackupStatus.Completed,
     )
 }
