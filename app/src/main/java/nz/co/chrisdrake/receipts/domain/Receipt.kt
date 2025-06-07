@@ -15,6 +15,7 @@ data class Receipt(
     val date: LocalDate,
     val time: LocalTime?,
     val items: List<ReceiptItem>,
+    val backUpStatus: BackupStatus,
     val createdAt: Long,
     val updatedAt: Long,
 ) {

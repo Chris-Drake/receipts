@@ -39,6 +39,7 @@ class HomeViewModel(
         date = date.format(DATE_FORMATTER),
         time = time?.format(TIME_FORMATTER),
         itemCount = items.size,
-        totalAmount = "$${totalAmount}"
+        totalAmount = "$${totalAmount}",
+        backupStatus = backUpStatus,
     )
 }

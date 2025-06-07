@@ -4,6 +4,8 @@ import android.app.Application
 import androidx.room.Room
 import nz.co.chrisdrake.receipts.data.ReceiptDatabase
 import nz.co.chrisdrake.receipts.data.ReceiptRepository
+import nz.co.chrisdrake.receipts.data.RemoteDataSource
+import nz.co.chrisdrake.receipts.domain.BackupReceiptsAsync
 import nz.co.chrisdrake.receipts.domain.CopyPictureToInternalStorage
 import nz.co.chrisdrake.receipts.domain.GetCurrentUser
 import nz.co.chrisdrake.receipts.domain.GetReceipt
@@ -35,7 +37,9 @@ object DependencyRegistry {
 
         register { get<ReceiptDatabase>().receiptDao() }
 
-        register { ReceiptRepository(dao = get()) }
+        register { RemoteDataSource() }
+
+        register { ReceiptRepository(dao = get(), remoteDataSource = get()) }
 
         register { GetTempImageUri(context = application) }
 
@@ -44,6 +48,8 @@ object DependencyRegistry {
         register { SaveReceipt(repository = get()) }
 
         register { UpdateReceipt(repository = get()) }
+
+        register { BackupReceiptsAsync(receiptRepository = get(), getCurrentUser = get()) }
 
         register { GetReceipts(repository = get()) }
 

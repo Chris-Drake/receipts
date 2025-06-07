@@ -16,6 +16,7 @@ interface ReceiptDao {
     @Query("SELECT * FROM receipts ORDER BY receipt_date DESC, receipt_time DESC")
     fun getReceipts(): Flow<List<ReceiptWithItemsEntity>>
 
+    @Transaction
     @Query("SELECT * FROM receipts WHERE receipt_id = :id")
     suspend fun getReceipt(id: ReceiptId): ReceiptWithItemsEntity
 

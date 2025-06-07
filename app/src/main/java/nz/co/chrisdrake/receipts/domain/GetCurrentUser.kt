@@ -9,6 +9,7 @@ class GetCurrentUser {
         val currentUser = Firebase.auth.currentUser ?: return null
 
         return User(
+            id = currentUser.uid,
             email = checkNotNull(currentUser.email),
         )
     }

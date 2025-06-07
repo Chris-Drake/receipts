@@ -12,6 +12,7 @@ fun ReceiptEntity.toDomain(items: List<ReceiptItemEntity>): Receipt {
         date = date,
         time = time,
         items = items.map(ReceiptItemEntity::toDomain),
+        backUpStatus = backupStatus,
         createdAt = createdAt,
         updatedAt = updatedAt,
     )
@@ -37,6 +38,7 @@ fun Receipt.toEntity(): ReceiptWithItemsEntity {
             merchant = merchant,
             date = date,
             time = time,
+            backupStatus = backUpStatus,
             createdAt = createdAt,
             updatedAt = updatedAt,
         ),
@@ -50,5 +52,24 @@ private fun ReceiptItem.toEntity(receiptId: String): ReceiptItemEntity {
         receiptId = receiptId,
         name = name,
         amount = amount,
+    )
+}
+
+fun Receipt.toRemoteEntity(imagePath: String): RemoteReceiptEntity {
+    return RemoteReceiptEntity(
+        id = id,
+        imagePath = imagePath,
+        merchant = merchant,
+        date = date.toString(),
+        time = time?.toString(),
+        items = items.map {
+            RemoteReceiptItemEntity(
+                id = it.id,
+                name = it.name,
+                amount = it.amount.toString(),
+            )
+        },
+        createdAt = createdAt,
+        updatedAt = updatedAt,
     )
 }

@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import nz.co.chrisdrake.receipts.DependencyRegistry.get
+import nz.co.chrisdrake.receipts.domain.BackupStatus
 import nz.co.chrisdrake.receipts.domain.CopyPictureToInternalStorage
 import nz.co.chrisdrake.receipts.domain.GetReceipt
 import nz.co.chrisdrake.receipts.domain.GetTempImageUri
@@ -135,6 +136,7 @@ class ReceiptViewModel(
                 date = date,
                 time = time,
                 items = items,
+                backUpStatus = BackupStatus.NotStarted,
                 createdAt = existingReceipt?.createdAt ?: System.currentTimeMillis(),
                 updatedAt = System.currentTimeMillis(),
             )
