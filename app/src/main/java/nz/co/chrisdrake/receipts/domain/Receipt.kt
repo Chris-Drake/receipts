@@ -2,6 +2,7 @@ package nz.co.chrisdrake.receipts.domain
 
 import android.net.Uri
 import java.math.BigDecimal
+import java.math.RoundingMode
 import java.time.LocalDate
 import java.time.LocalTime
 
@@ -19,7 +20,7 @@ data class Receipt(
     val createdAt: Long,
     val updatedAt: Long,
 ) {
-    val totalAmount: BigDecimal = items.sumOf { it.amount }
+    val totalAmount: BigDecimal = items.sumOf { it.amount }.setScale(2, RoundingMode.HALF_UP)
 
     init {
         check(items.isNotEmpty()) { "Receipt must have at least one item" }

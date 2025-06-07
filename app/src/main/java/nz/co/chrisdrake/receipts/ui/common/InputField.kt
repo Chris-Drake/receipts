@@ -81,8 +81,9 @@ private fun Preview_InputField_Empty() {
 }
 
 @Suppress("FunctionName")
-fun preview_InputFieldState(label: String) = InputFieldState(
+fun preview_InputFieldState(label: String, value: String = "") = InputFieldState(
     label = label,
+    value = value,
     onValueChanged = {},
 )
 

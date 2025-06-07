@@ -107,8 +107,10 @@ class ReceiptViewModel(
                         onTimeSelected = ::onTimeSelected
                     ),
                     items = receipt?.items?.map { createItem(from = it) } ?: listOf(createItem()),
+                    editing = receipt == null,
                     onClickSave = ::onClickSave,
                     onClickAddItem = ::onClickAddItem,
+                    onClickEdit = ::onClickEdit,
                 )
             )
         }
@@ -181,13 +183,15 @@ class ReceiptViewModel(
                 } else {
                     updateReceipt(receipt)
                 }
+
+                _viewState.update {
+                    it.copy(loadingMessage = null, details = it.details?.copy(editing = false))
+                }
             } catch (cancellation: CancellationException) {
                 throw cancellation
             } catch (exception: Exception) {
                 TODO()
             }
-
-            _viewState.update { it.copy(loadingMessage = null, dismissed = true) }
         }
     }
 
@@ -228,7 +232,7 @@ class ReceiptViewModel(
     }
 
     private val InputFieldState.sanitizedValue: String?
-        get() = value.trim().takeUnless(String::isEmpty)
+        get() = value.trim().removeSuffix(".").takeUnless(String::isEmpty)
 
     private fun createItem(from: ReceiptItem? = null): Item {
         val id = from?.id ?: UUID.randomUUID().toString()
@@ -260,6 +264,12 @@ class ReceiptViewModel(
     private fun onClickAddItem() {
         updateDetails { details ->
             details.copy(items = details.items + createItem(), itemsError = null)
+        }
+    }
+
+    private fun onClickEdit() {
+        updateDetails {
+            it.copy(editing = true)
         }
     }
 

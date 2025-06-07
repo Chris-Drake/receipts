@@ -105,8 +105,10 @@ private fun ReceiptContent(
                 ReceiptDetails(
                     viewState = viewState.details,
                     onClickImage = {
-                        tempImageUri = viewState.createTempImageUri()
-                        takePictureLauncher.launch(tempImageUri)
+                        if (viewState.details.editing) {
+                            tempImageUri = viewState.createTempImageUri()
+                            takePictureLauncher.launch(tempImageUri)
+                        }
                     },
                 )
             }

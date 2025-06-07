@@ -4,6 +4,8 @@ import android.net.Uri
 import nz.co.chrisdrake.receipts.ui.common.DateFieldState
 import nz.co.chrisdrake.receipts.ui.common.InputFieldState
 import nz.co.chrisdrake.receipts.ui.common.TimeFieldState
+import java.math.BigDecimal
+import java.math.RoundingMode
 
 data class ReceiptViewState(
     val title: String,
@@ -22,10 +24,22 @@ data class ReceiptViewState(
         val date: DateFieldState,
         val time: TimeFieldState,
         val items: List<Item>,
+        val editing: Boolean,
         val itemsError: String? = null,
         val onClickAddItem: () -> Unit,
         val onClickSave: () -> Unit,
-    )
+        val onClickEdit: () -> Unit,
+    ) {
+        val formattedDateTime = time.formattedValue.takeIf { it.isNotBlank() }
+            ?.let { "${date.formattedValue} at $it" }
+            ?: date.formattedValue
+
+        val formattedTotal: String? = if (items.size > 1) {
+            "$" + items.sumOf { it.amount.value.toBigDecimalOrNull() ?: BigDecimal.ZERO }.setScale(2, RoundingMode.HALF_UP)
+        } else {
+            null
+        }
+    }
 
     data class Item(
         val id: String,

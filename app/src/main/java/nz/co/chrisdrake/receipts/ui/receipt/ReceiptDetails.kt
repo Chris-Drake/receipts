@@ -1,6 +1,8 @@
 package nz.co.chrisdrake.receipts.ui.receipt
 
 import android.net.Uri
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -8,9 +10,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -25,6 +29,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
@@ -39,6 +44,9 @@ import nz.co.chrisdrake.receipts.ui.common.preview_InputFieldState
 import nz.co.chrisdrake.receipts.ui.receipt.ReceiptViewState.Details
 import nz.co.chrisdrake.receipts.ui.receipt.ReceiptViewState.Item
 import nz.co.chrisdrake.receipts.ui.theme.AppTheme
+import java.time.LocalDate
+import java.time.LocalTime
+import java.time.Month
 
 @Composable
 fun ReceiptDetails(
@@ -46,6 +54,7 @@ fun ReceiptDetails(
     onClickImage: () -> Unit,
 ) {
     Column(
+        modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         ReceiptImage(uri = viewState.imageUri, onClick = onClickImage)
@@ -56,45 +65,77 @@ fun ReceiptDetails(
 
         Spacer(modifier = Modifier.weight(1f))
 
-        SaveButton(onClick = viewState.onClickSave)
+        if (viewState.editing) {
+            SaveButton(onClick = viewState.onClickSave)
+        } else {
+            EditButton(onClick = viewState.onClickEdit)
+        }
     }
 }
 
 @Composable
-private fun ReceiptImage(uri: Uri, onClick: () -> Unit) {
+private fun ColumnScope.ReceiptImage(uri: Uri, onClick: () -> Unit) {
     AsyncImage(
         model = uri,
         contentDescription = "Receipt image",
         modifier = Modifier
-            .fillMaxWidth()
-            .height(200.dp)
+            .align(Alignment.CenterHorizontally)
+            .height(280.dp)
+            .clip(RoundedCornerShape(16.dp))
             .clickable(onClick = onClick),
-        contentScale = ContentScale.Crop,
+        contentScale = ContentScale.FillHeight,
     )
 }
 
 @Composable
 private fun DetailsSection(viewState: Details) {
-    Text(
-        text = "Details",
-        style = typography.titleLarge,
-    )
+    Spacer(modifier = Modifier.height(8.dp))
 
-    InputField(field = viewState.merchant)
+    AnimatedContent(viewState.editing) {
+        if (it) {
+            EditableDetailsSection(viewState = viewState)
+        } else {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                Text(
+                    text = viewState.merchant.value,
+                    style = typography.displaySmall,
+                )
 
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                Text(
+                    text = viewState.formattedDateTime,
+                    style = typography.labelMedium,
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun EditableDetailsSection(viewState: Details) {
+    Column(
         modifier = Modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        DateField(
-            field = viewState.date,
-            modifier = Modifier.fillMaxWidth().weight(1f),
-        )
+        InputField(field = viewState.merchant)
 
-        TimeField(
-            field = viewState.time,
-            modifier = Modifier.fillMaxWidth().weight(1f),
-        )
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            DateField(
+                field = viewState.date,
+                modifier = Modifier.fillMaxWidth().weight(1f),
+            )
+
+            TimeField(
+                field = viewState.time,
+                modifier = Modifier.fillMaxWidth().weight(1f),
+            )
+        }
     }
 }
 
@@ -106,7 +147,17 @@ private fun ColumnScope.ItemsSection(viewState: Details) {
     )
 
     viewState.items.forEach {
-        Item(item = it)
+        Item(item = it, editing = viewState.editing)
+    }
+
+    AnimatedVisibility(viewState.formattedTotal != null) {
+        viewState.formattedTotal?.let {
+            LabelValue(
+                label = "Total",
+                value = it,
+                modifier = Modifier.padding(vertical = if (viewState.editing) 8.dp else 0.dp),
+            )
+        }
     }
 
     viewState.itemsError?.let { error ->
@@ -117,14 +168,27 @@ private fun ColumnScope.ItemsSection(viewState: Details) {
         )
     }
 
-    AddItemButton(
-        onClick = viewState.onClickAddItem,
-        modifier = Modifier.align(Alignment.CenterHorizontally),
-    )
+    if (viewState.editing) {
+        AddItemButton(
+            onClick = viewState.onClickAddItem,
+            modifier = Modifier.align(Alignment.CenterHorizontally),
+        )
+    }
 }
 
 @Composable
-private fun Item(item: Item) {
+private fun Item(item: Item, editing: Boolean) = with(item) {
+    AnimatedContent(editing) {
+        if (it) {
+            EditableItem(item = item)
+        } else {
+            LabelValue(label = name.value, value = "$" + amount.value)
+        }
+    }
+}
+
+@Composable
+private fun EditableItem(item: Item) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         modifier = Modifier.fillMaxWidth()
@@ -143,6 +207,21 @@ private fun Item(item: Item) {
                 contentDescription = "Delete item",
             )
         }
+    }
+}
+
+@Composable
+private fun LabelValue(label: String, value: String, modifier: Modifier = Modifier) {
+    Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        Text(
+            text = label,
+            style = typography.labelMedium,
+        )
+
+        Text(
+            text = value,
+            style = typography.bodyMedium,
+        )
     }
 }
 
@@ -173,28 +252,56 @@ private fun SaveButton(onClick: () -> Unit) {
     }
 }
 
+@Composable
+private fun EditButton(onClick: () -> Unit) {
+    Button(
+        onClick = onClick,
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        Text(text = "Edit")
+    }
+}
+
+@Suppress("FunctionName")
+private fun preview_ReceiptDetails() = Details(
+    imageUri = Uri.EMPTY,
+    merchant = preview_InputFieldState(label = "Merchant", value = "Starbucks"),
+    date = DateFieldState(selection = LocalDate.of(1970, Month.JANUARY, 1), onDateSelected = {}),
+    time = TimeFieldState(selection = LocalTime.of(12, 0), onTimeSelected = {}),
+    items = List(2) { index ->
+        Item(
+            id = index.toString(),
+            name = preview_InputFieldState(label = "Item", value = "Latte"),
+            amount = preview_InputFieldState(label = "Amount", value = "4.50"),
+            onClickDelete = {},
+        )
+    },
+    editing = false,
+    onClickAddItem = {},
+    onClickSave = {},
+    onClickEdit = {},
+)
+
 @Preview
 @Composable
 private fun Preview_ReceiptDetails() {
     AppTheme {
         Box(modifier = Modifier.padding(16.dp)) {
             ReceiptDetails(
-                viewState = Details(
-                    imageUri = Uri.EMPTY,
-                    merchant = preview_InputFieldState(label = "Merchant"),
-                    date = DateFieldState(onDateSelected = {}),
-                    time = TimeFieldState(onTimeSelected = {}),
-                    items = List(2) { index ->
-                        Item(
-                            id = index.toString(),
-                            name = preview_InputFieldState(label = "Item"),
-                            amount = preview_InputFieldState(label = "Amount"),
-                            onClickDelete = {},
-                        )
-                    },
-                    onClickAddItem = {},
-                    onClickSave = {},
-                ),
+                viewState = preview_ReceiptDetails(),
+                onClickImage = {},
+            )
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun Preview_ReceiptDetails_Editing() {
+    AppTheme {
+        Box(modifier = Modifier.padding(16.dp)) {
+            ReceiptDetails(
+                viewState = preview_ReceiptDetails().copy(editing = true),
                 onClickImage = {},
             )
         }

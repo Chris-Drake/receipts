@@ -35,14 +35,18 @@ class HomeViewModel(
         }
     }
 
-    private fun Receipt.toListItem() = ReceiptListItem(
-        id = id,
-        imageUri = imageUri.toString(),
-        merchant = merchant,
-        date = date.format(DATE_FORMATTER),
-        time = time?.format(TIME_FORMATTER),
-        itemCount = items.size,
-        totalAmount = "$${totalAmount}",
-        backupStatus = backUpStatus,
-    )
+    private fun Receipt.toListItem(): ReceiptListItem {
+        val date = date.format(DATE_FORMATTER)
+        val time = time?.format(TIME_FORMATTER)
+
+        return ReceiptListItem(
+            id = id,
+            imageUri = imageUri.toString(),
+            merchant = merchant,
+            dateTime = time?.let { "$date at $time" } ?: date,
+            itemCount = "${items.size} item${if (items.size == 1) "" else "s"}",
+            totalAmount = "$${totalAmount}",
+            backupStatus = backUpStatus,
+        )
+    }
 }
