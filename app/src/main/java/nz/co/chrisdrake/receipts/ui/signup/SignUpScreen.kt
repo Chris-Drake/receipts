@@ -142,3 +142,37 @@ private fun Preview_Content() {
         )
     }
 }
+
+@Preview
+@Composable
+private fun Preview_Content_Loading() {
+    AppTheme {
+        Content(
+            viewState = SignUpViewState(
+                loading = true,
+                email = InputFieldState(label = "Email", onValueChanged = {}),
+                password = InputFieldState(label = "Password", onValueChanged = {}),
+                confirmPassword = InputFieldState(label = "Confirm Password", onValueChanged = {}),
+                onClickSignUp = {},
+            ),
+            navigateBack = {},
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun Preview_Content_Error() {
+    AppTheme {
+        Content(
+            viewState = SignUpViewState(
+                errorMessage = "Error",
+                email = InputFieldState(label = "Email", onValueChanged = {}, error = "Required"),
+                password = InputFieldState(label = "Password", onValueChanged = {}, error = "Required"),
+                confirmPassword = InputFieldState(label = "Confirm Password", onValueChanged = {}, error = "Required"),
+                onClickSignUp = {},
+            ),
+            navigateBack = {},
+        )
+    }
+}

@@ -9,6 +9,8 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import nz.co.chrisdrake.receipts.ui.home.HomeRoute
 import nz.co.chrisdrake.receipts.ui.home.HomeScreen
+import nz.co.chrisdrake.receipts.ui.profile.ProfileRoute
+import nz.co.chrisdrake.receipts.ui.profile.ProfileScreen
 import nz.co.chrisdrake.receipts.ui.receipt.ReceiptRoute
 import nz.co.chrisdrake.receipts.ui.receipt.ReceiptScreen
 import nz.co.chrisdrake.receipts.ui.signin.SignInRoute
@@ -27,7 +29,7 @@ fun AppNavHost() {
                     if (Firebase.auth.currentUser == null) {
                         navController.navigate(SignInRoute)
                     } else {
-                        TODO()
+                        navController.navigate(ProfileRoute)
                     }
                 },
                 navigateToReceipt = { navController.navigate(ReceiptRoute(id = it)) },
@@ -52,6 +54,12 @@ fun AppNavHost() {
             SignUpScreen(
                 navigateBack = { navController.popBackStack() },
                 navigateToHome = { navController.popBackStack(HomeRoute, false) },
+            )
+        }
+
+        composable<ProfileRoute> {
+            ProfileScreen(
+                navigateBack = { navController.popBackStack() },
             )
         }
     }

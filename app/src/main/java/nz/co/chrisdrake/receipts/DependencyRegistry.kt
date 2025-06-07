@@ -5,11 +5,13 @@ import androidx.room.Room
 import nz.co.chrisdrake.receipts.data.ReceiptDatabase
 import nz.co.chrisdrake.receipts.data.ReceiptRepository
 import nz.co.chrisdrake.receipts.domain.CopyPictureToInternalStorage
+import nz.co.chrisdrake.receipts.domain.GetCurrentUser
 import nz.co.chrisdrake.receipts.domain.GetReceipt
 import nz.co.chrisdrake.receipts.domain.GetReceipts
 import nz.co.chrisdrake.receipts.domain.GetTempImageUri
 import nz.co.chrisdrake.receipts.domain.SaveReceipt
 import nz.co.chrisdrake.receipts.domain.SignIn
+import nz.co.chrisdrake.receipts.domain.SignOut
 import nz.co.chrisdrake.receipts.domain.SignUp
 import nz.co.chrisdrake.receipts.domain.UpdateReceipt
 import kotlin.reflect.KClass
@@ -47,9 +49,13 @@ object DependencyRegistry {
 
         register { GetReceipt(repository = get()) }
 
+        register { GetCurrentUser() }
+
         register { SignIn() }
 
         register { SignUp() }
+
+        register { SignOut() }
     }
 
     private inline fun <reified T : Any> register(crossinline block: () -> T) {

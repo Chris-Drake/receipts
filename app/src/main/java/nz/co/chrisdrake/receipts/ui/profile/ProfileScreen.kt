@@ -1,10 +1,12 @@
-package nz.co.chrisdrake.receipts.ui.signin
+package nz.co.chrisdrake.receipts.ui.profile
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -19,39 +21,30 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalAutofillManager
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.serialization.Serializable
-import nz.co.chrisdrake.receipts.ui.common.EmailInputField
-import nz.co.chrisdrake.receipts.ui.common.InputFieldState
-import nz.co.chrisdrake.receipts.ui.common.PasswordInputField
 import nz.co.chrisdrake.receipts.ui.theme.AppTheme
 
 @Serializable
-object SignInRoute
+object ProfileRoute
 
 @Composable
-fun SignInScreen(
-    viewModel: SignInViewModel = viewModel(),
+fun ProfileScreen(
+    viewModel: ProfileViewModel = viewModel(),
     navigateBack: () -> Unit,
-    navigateToSignUp: () -> Unit,
 ) {
     val viewState by viewModel.viewState.collectAsState()
-    val autofillManager = LocalAutofillManager.current
 
     LaunchedEffect(viewState) {
         if (viewState.complete) {
-            autofillManager?.commit()
             navigateBack()
         }
     }
@@ -59,15 +52,13 @@ fun SignInScreen(
     Content(
         viewState = viewState,
         navigateBack = navigateBack,
-        navigateToSignUp = navigateToSignUp,
     )
 }
 
 @Composable
 private fun Content(
-    viewState: SignInViewState,
+    viewState: ProfileViewState,
     navigateBack: () -> Unit,
-    navigateToSignUp: () -> Unit,
 ) {
     Scaffold(
         topBar = {
@@ -80,11 +71,35 @@ private fun Content(
                 .verticalScroll(rememberScrollState())
                 .padding(innerPadding)
                 .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(24.dp),
         ) {
-            EmailInputField(field = viewState.email)
+            Text(
+                text = "Email",
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
 
-            PasswordInputField(field = viewState.password)
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Text(
+                text = viewState.email,
+                style = MaterialTheme.typography.bodyLarge,
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            Button(
+                onClick = viewState.onClickSignOut,
+                modifier = Modifier.fillMaxWidth(),
+                enabled = !viewState.loading,
+            ) {
+                if (viewState.loading) {
+                    CircularProgressIndicator(modifier = Modifier.size(24.dp))
+                } else {
+                    Text("Sign Out")
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
 
             AnimatedVisibility(visible = viewState.errorMessage != null) {
                 viewState.errorMessage?.let { error ->
@@ -95,25 +110,6 @@ private fun Content(
                     )
                 }
             }
-
-            Button(
-                onClick = viewState.onClickSignIn,
-                modifier = Modifier.fillMaxWidth(),
-                enabled = !viewState.loading,
-            ) {
-                if (viewState.loading) {
-                    CircularProgressIndicator(modifier = Modifier.size(24.dp))
-                } else {
-                    Text("Sign In")
-                }
-            }
-
-            TextButton(
-                onClick = navigateToSignUp,
-                modifier = Modifier.align(Alignment.CenterHorizontally),
-            ) {
-                Text("Sign up as a new user")
-            }
         }
     }
 }
@@ -123,7 +119,7 @@ private fun Content(
 private fun TopBar(dismiss: () -> Unit) {
     TopAppBar(
         title = {
-            Text(text = "Sign In")
+            Text(text = "Profile")
         },
         navigationIcon = {
             IconButton(onClick = dismiss) {
@@ -141,13 +137,11 @@ private fun TopBar(dismiss: () -> Unit) {
 private fun Preview_Content() {
     AppTheme {
         Content(
-            viewState = SignInViewState(
-                email = InputFieldState(label = "Email", onValueChanged = {}),
-                password = InputFieldState(label = "Password", onValueChanged = {}),
-                onClickSignIn = {},
+            viewState = ProfileViewState(
+                email = "user@example.com",
+                onClickSignOut = {},
             ),
             navigateBack = {},
-            navigateToSignUp = {},
         )
     }
 }
@@ -157,14 +151,12 @@ private fun Preview_Content() {
 private fun Preview_Content_Loading() {
     AppTheme {
         Content(
-            viewState = SignInViewState(
+            viewState = ProfileViewState(
+                email = "user@example.com",
                 loading = true,
-                email = InputFieldState(label = "Email", onValueChanged = {}),
-                password = InputFieldState(label = "Password", onValueChanged = {}),
-                onClickSignIn = {},
+                onClickSignOut = {},
             ),
             navigateBack = {},
-            navigateToSignUp = {},
         )
     }
 }
@@ -174,14 +166,12 @@ private fun Preview_Content_Loading() {
 private fun Preview_Content_Error() {
     AppTheme {
         Content(
-            viewState = SignInViewState(
+            viewState = ProfileViewState(
+                email = "user@example.com",
                 errorMessage = "Error",
-                email = InputFieldState(label = "Email", onValueChanged = {}, error = "Required"),
-                password = InputFieldState(label = "Password", onValueChanged = {}, error = "Required"),
-                onClickSignIn = {},
+                onClickSignOut = {},
             ),
             navigateBack = {},
-            navigateToSignUp = {},
         )
     }
 }
