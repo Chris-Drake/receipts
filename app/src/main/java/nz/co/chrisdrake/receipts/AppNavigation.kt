@@ -13,6 +13,8 @@ import nz.co.chrisdrake.receipts.ui.receipt.ReceiptRoute
 import nz.co.chrisdrake.receipts.ui.receipt.ReceiptScreen
 import nz.co.chrisdrake.receipts.ui.signin.SignInRoute
 import nz.co.chrisdrake.receipts.ui.signin.SignInScreen
+import nz.co.chrisdrake.receipts.ui.signup.SignUpRoute
+import nz.co.chrisdrake.receipts.ui.signup.SignUpScreen
 
 @Composable
 fun AppNavHost() {
@@ -42,7 +44,14 @@ fun AppNavHost() {
         composable<SignInRoute> {
             SignInScreen(
                 navigateBack = { navController.popBackStack() },
-                navigateToSignUp = { TODO() },
+                navigateToSignUp = { navController.navigate(SignUpRoute) },
+            )
+        }
+
+        composable<SignUpRoute> {
+            SignUpScreen(
+                navigateBack = { navController.popBackStack() },
+                navigateToHome = { navController.popBackStack(HomeRoute, false) },
             )
         }
     }

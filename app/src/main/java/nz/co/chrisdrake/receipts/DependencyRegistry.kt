@@ -10,6 +10,7 @@ import nz.co.chrisdrake.receipts.domain.GetReceipts
 import nz.co.chrisdrake.receipts.domain.GetTempImageUri
 import nz.co.chrisdrake.receipts.domain.SaveReceipt
 import nz.co.chrisdrake.receipts.domain.SignIn
+import nz.co.chrisdrake.receipts.domain.SignUp
 import nz.co.chrisdrake.receipts.domain.UpdateReceipt
 import kotlin.reflect.KClass
 
@@ -47,6 +48,8 @@ object DependencyRegistry {
         register { GetReceipt(repository = get()) }
 
         register { SignIn() }
+
+        register { SignUp() }
     }
 
     private inline fun <reified T : Any> register(crossinline block: () -> T) {
