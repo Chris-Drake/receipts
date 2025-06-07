@@ -7,6 +7,7 @@ import nz.co.chrisdrake.receipts.data.ReceiptRepository
 import nz.co.chrisdrake.receipts.data.RemoteDataSource
 import nz.co.chrisdrake.receipts.domain.BackupReceiptsAsync
 import nz.co.chrisdrake.receipts.domain.CopyPictureToInternalStorage
+import nz.co.chrisdrake.receipts.domain.DeleteReceipt
 import nz.co.chrisdrake.receipts.domain.GetCurrentUser
 import nz.co.chrisdrake.receipts.domain.GetReceipt
 import nz.co.chrisdrake.receipts.domain.GetReceipts
@@ -48,6 +49,8 @@ object DependencyRegistry {
         register { SaveReceipt(repository = get()) }
 
         register { UpdateReceipt(repository = get()) }
+
+        register { DeleteReceipt(repository = get(), getCurrentUser = get()) }
 
         register { BackupReceiptsAsync(receiptRepository = get(), getCurrentUser = get()) }
 

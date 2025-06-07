@@ -10,7 +10,9 @@ data class ReceiptViewState(
     val createTempImageUri: () -> Uri,
     val onPictureResult: (uri: Uri, saved: Boolean) -> Unit,
     val details: Details? = null,
-    val loading: Boolean = false,
+    val loadingMessage: String? = null,
+    val deleteVisible: Boolean,
+    val onClickDelete: () -> Unit,
     val dismissed: Boolean = false,
 ) {
 

@@ -10,6 +10,7 @@ import kotlinx.coroutines.launch
 import nz.co.chrisdrake.receipts.DependencyRegistry.get
 import nz.co.chrisdrake.receipts.domain.BackupStatus
 import nz.co.chrisdrake.receipts.domain.CopyPictureToInternalStorage
+import nz.co.chrisdrake.receipts.domain.DeleteReceipt
 import nz.co.chrisdrake.receipts.domain.GetReceipt
 import nz.co.chrisdrake.receipts.domain.GetTempImageUri
 import nz.co.chrisdrake.receipts.domain.Receipt
@@ -28,12 +29,13 @@ import java.util.UUID
 import kotlin.coroutines.cancellation.CancellationException
 
 class ReceiptViewModel(
-    existingId: ReceiptId?,
+    private val existingId: ReceiptId?,
     getTempImageUri: GetTempImageUri = get(),
     private val copyPictureToInternalStorage: CopyPictureToInternalStorage = get(),
     private val getReceipt: GetReceipt = get(),
     private val saveReceipt: SaveReceipt = get(),
     private val updateReceipt: UpdateReceipt = get(),
+    private val deleteReceipt: DeleteReceipt = get(),
 ) : ViewModel() {
 
     private var existingReceipt: Receipt? = null
@@ -43,6 +45,8 @@ class ReceiptViewModel(
             title = if (existingId == null) "New Receipt" else "Receipt",
             createTempImageUri = { getTempImageUri() },
             onPictureResult = ::onPictureResult,
+            deleteVisible = existingId != null,
+            onClickDelete = ::onClickDelete,
         )
     )
 
@@ -53,7 +57,7 @@ class ReceiptViewModel(
     }
 
     private fun loadExistingReceipt(id: ReceiptId) {
-        _viewState.update { it.copy(loading = true) }
+        _viewState.update { it.copy(loadingMessage = "Loading…") }
 
         viewModelScope.launch {
             existingReceipt = getReceipt(id = id).also {
@@ -81,6 +85,7 @@ class ReceiptViewModel(
     private fun initializeDetails(receipt: Receipt?, imageUri: Uri) {
         _viewState.update { currentState ->
             currentState.copy(
+                loadingMessage = null,
                 details = Details(
                     imageUri = imageUri,
                     merchant = InputFieldState(
@@ -124,7 +129,7 @@ class ReceiptViewModel(
             ?: return
 
         viewModelScope.launch {
-            _viewState.update { it.copy(loading = true) }
+            _viewState.update { it.copy(loadingMessage = "Saving…") }
 
             val id = existingReceipt?.id ?: UUID.randomUUID().toString()
             val imageUri = copyPictureToInternalStorage(uri = details.imageUri, receiptId = id)
@@ -153,7 +158,23 @@ class ReceiptViewModel(
                 TODO()
             }
 
-            _viewState.update { it.copy(dismissed = true) }
+            _viewState.update { it.copy(loadingMessage = null, dismissed = true) }
+        }
+    }
+
+    private fun onClickDelete() {
+        _viewState.update { it.copy(loadingMessage = "Deleting…") }
+
+        viewModelScope.launch {
+            try {
+                deleteReceipt(id = checkNotNull(existingId))
+            } catch (cancellation: CancellationException) {
+                throw cancellation
+            } catch (exception: Exception) {
+                TODO()
+            }
+
+            _viewState.update { it.copy(loadingMessage = null, dismissed = true) }
         }
     }
 
