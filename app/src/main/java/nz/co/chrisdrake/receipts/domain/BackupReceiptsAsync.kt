@@ -1,5 +1,6 @@
 package nz.co.chrisdrake.receipts.domain
 
+import android.net.ConnectivityManager
 import com.google.firebase.crashlytics.ktx.crashlytics
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.CoroutineScope
@@ -12,11 +13,13 @@ import kotlinx.coroutines.sync.withLock
 import nz.co.chrisdrake.receipts.data.ReceiptRepository
 import nz.co.chrisdrake.receipts.domain.auth.GetCurrentUser
 import nz.co.chrisdrake.receipts.domain.model.Receipt
+import nz.co.chrisdrake.receipts.util.isUnmeteredNetwork
 import kotlin.coroutines.cancellation.CancellationException
 
 class BackupReceiptsAsync(
     private val getCurrentUser: GetCurrentUser,
     private val receiptRepository: ReceiptRepository,
+    private val connectivityManager: ConnectivityManager,
 ) {
     private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
     private val mutex = Mutex()
@@ -26,7 +29,7 @@ class BackupReceiptsAsync(
             val currentUser = getCurrentUser() ?: return@launch
 
             receipts.forEach { receipt ->
-                if (isActive) {
+                if (isActive && connectivityManager.isUnmeteredNetwork()) {
                     try {
                         receiptRepository.backupReceipt(userId = currentUser.id, receipt = receipt)
                     } catch (cancellation: CancellationException) {

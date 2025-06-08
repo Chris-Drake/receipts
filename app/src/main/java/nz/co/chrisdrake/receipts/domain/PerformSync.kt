@@ -1,11 +1,13 @@
 package nz.co.chrisdrake.receipts.domain
 
+import android.net.ConnectivityManager
 import androidx.core.net.toUri
 import com.google.firebase.crashlytics.ktx.crashlytics
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -14,12 +16,14 @@ import nz.co.chrisdrake.receipts.data.RemoteDataSource
 import nz.co.chrisdrake.receipts.domain.auth.GetCurrentUser
 import nz.co.chrisdrake.receipts.domain.image.GetPictureFile
 import nz.co.chrisdrake.receipts.domain.model.Receipt
+import nz.co.chrisdrake.receipts.util.isUnmeteredNetwork
 
 class PerformSync(
     private val getCurrentUser: GetCurrentUser,
     private val getPictureFile: GetPictureFile,
     private val remoteDataSource: RemoteDataSource,
     private val receiptRepository: ReceiptRepository,
+    private val connectivityManager: ConnectivityManager,
 ) {
     private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
     private val mutex = Mutex()
@@ -34,7 +38,9 @@ class PerformSync(
                 remoteDataSource
                     .getReceipts(userId = userId)
                     .forEach { receipt ->
-                        receiptRepository.getReceipt(id = receipt.id) ?: import(receipt)
+                        if (isActive && connectivityManager.isUnmeteredNetwork()) {
+                            receiptRepository.getReceipt(id = receipt.id) ?: import(receipt)
+                        }
                     }
             } catch (cancellation: Exception) {
                 throw cancellation

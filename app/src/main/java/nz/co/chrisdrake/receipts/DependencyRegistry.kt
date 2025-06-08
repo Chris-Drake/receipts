@@ -1,6 +1,8 @@
 package nz.co.chrisdrake.receipts
 
 import android.app.Application
+import android.content.Context
+import android.net.ConnectivityManager
 import androidx.room.Room
 import nz.co.chrisdrake.receipts.data.ReceiptDatabase
 import nz.co.chrisdrake.receipts.data.ReceiptRepository
@@ -34,6 +36,10 @@ object DependencyRegistry {
 
     fun registerApplicationDependencies(application: Application) {
         register {
+            application.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        }
+
+        register {
             Room.databaseBuilder(
                 context = application,
                 klass = ReceiptDatabase::class.java,
@@ -65,7 +71,7 @@ object DependencyRegistry {
 
         register { DeleteReceipt(repository = get(), getCurrentUser = get()) }
 
-        register { BackupReceiptsAsync(receiptRepository = get(), getCurrentUser = get()) }
+        register { BackupReceiptsAsync(receiptRepository = get(), getCurrentUser = get(), connectivityManager = get()) }
 
         register { GetReceipts(repository = get()) }
 
@@ -73,7 +79,7 @@ object DependencyRegistry {
 
         register { GetCurrentUser() }
 
-        register { PerformSync(receiptRepository = get(), remoteDataSource = get(), getCurrentUser = get(), getPictureFile = get()) }
+        register { PerformSync(receiptRepository = get(), remoteDataSource = get(), getCurrentUser = get(), getPictureFile = get(), connectivityManager = get()) }
 
         register { SignIn(performSync = get()) }
 
