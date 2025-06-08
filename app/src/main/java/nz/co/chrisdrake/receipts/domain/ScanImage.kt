@@ -53,6 +53,10 @@ class ScanImage(private val context: Context) {
             inlineData(data, "image/jpeg")
             text("Extract the text from the receipt image and return the result.")
             text("Format the date as YYYY-MM-DD and the time as HH:mm.")
+            text("If the receipt itemizes GST or tax separately, add it to the amount for each individual " +
+                    "item (i.e. by multiplying the original amount by the percentage of the tax).")
+            text("If the receipt itemizes GST or tax separately, do not include it as a separate item.")
+            text("If the receipt includes a total, do not include it as a separate item.")
         }
 
         val responseJson = checkNotNull(model.generateContent(prompt).text)
