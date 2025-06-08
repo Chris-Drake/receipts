@@ -3,6 +3,7 @@ package nz.co.chrisdrake.receipts.ui.receipt
 import android.net.Uri
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,11 +15,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.OpenInFull
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -57,7 +60,12 @@ fun ReceiptDetails(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        ReceiptImage(uri = viewState.imageUri, onClick = onClickImage)
+        ReceiptImage(
+            uri = viewState.imageUri,
+            onClick = onClickImage,
+            onClickOpen = viewState.onClickOpenImage,
+            modifier = Modifier.align(Alignment.CenterHorizontally),
+        )
 
         DetailsSection(viewState = viewState)
 
@@ -74,17 +82,36 @@ fun ReceiptDetails(
 }
 
 @Composable
-private fun ColumnScope.ReceiptImage(uri: Uri, onClick: () -> Unit) {
-    AsyncImage(
-        model = uri,
-        contentDescription = "Receipt image",
-        modifier = Modifier
-            .align(Alignment.CenterHorizontally)
-            .height(280.dp)
-            .clip(RoundedCornerShape(16.dp))
-            .clickable(onClick = onClick),
-        contentScale = ContentScale.FillHeight,
-    )
+private fun ReceiptImage(
+    uri: Uri,
+    onClick: () -> Unit,
+    onClickOpen: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Box(modifier = modifier) {
+        AsyncImage(
+            model = uri,
+            contentDescription = "Receipt image",
+            modifier = Modifier
+                .height(280.dp)
+                .clip(RoundedCornerShape(16.dp))
+                .clickable(onClick = onClick),
+            contentScale = ContentScale.FillHeight,
+        )
+
+        IconButton(
+            onClick = onClickOpen,
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(16.dp)
+                .background(color = colorScheme.surface, shape = CircleShape),
+        ) {
+            Icon(
+                imageVector = Icons.Default.OpenInFull,
+                contentDescription = "Open receipt image",
+            )
+        }
+    }
 }
 
 @Composable
@@ -280,6 +307,7 @@ private fun preview_ReceiptDetails() = Details(
     onClickAddItem = {},
     onClickSave = {},
     onClickEdit = {},
+    onClickOpenImage = {},
 )
 
 @Preview

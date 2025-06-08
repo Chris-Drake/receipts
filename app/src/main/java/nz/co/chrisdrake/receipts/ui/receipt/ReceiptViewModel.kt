@@ -15,6 +15,7 @@ import nz.co.chrisdrake.receipts.domain.CopyPictureToInternalStorage
 import nz.co.chrisdrake.receipts.domain.DeleteReceipt
 import nz.co.chrisdrake.receipts.domain.GetReceipt
 import nz.co.chrisdrake.receipts.domain.GetTempImageUri
+import nz.co.chrisdrake.receipts.domain.OpenImage
 import nz.co.chrisdrake.receipts.domain.Receipt
 import nz.co.chrisdrake.receipts.domain.ReceiptId
 import nz.co.chrisdrake.receipts.domain.ReceiptItem
@@ -34,6 +35,7 @@ import kotlin.coroutines.cancellation.CancellationException
 class ReceiptViewModel(
     private val existingId: ReceiptId?,
     getTempImageUri: GetTempImageUri = get(),
+    private val openImage: OpenImage = get(),
     private val copyPictureToInternalStorage: CopyPictureToInternalStorage = get(),
     private val scanImage: ScanImage = get(),
     private val getReceipt: GetReceipt = get(),
@@ -89,6 +91,8 @@ class ReceiptViewModel(
 
     private fun initializeDetails(receipt: Receipt?, imageUri: Uri) {
         _viewState.update { currentState ->
+            val editing = receipt == null
+
             currentState.copy(
                 loadingMessage = null,
                 details = Details(
@@ -107,12 +111,19 @@ class ReceiptViewModel(
                         onTimeSelected = ::onTimeSelected
                     ),
                     items = receipt?.items?.map { createItem(from = it) } ?: listOf(createItem()),
-                    editing = receipt == null,
+                    editing = editing,
                     onClickSave = ::onClickSave,
                     onClickAddItem = ::onClickAddItem,
                     onClickEdit = ::onClickEdit,
+                    onClickOpenImage = ::onClickOpenImage,
                 )
             )
+        }
+    }
+
+    private fun onClickOpenImage() {
+        viewState.value.details?.imageUri?.let {
+            openImage(it)
         }
     }
 
@@ -180,12 +191,12 @@ class ReceiptViewModel(
             try {
                 if (existingReceipt == null) {
                     saveReceipt(receipt)
+                    _viewState.update { it.copy(loadingMessage = null, dismissed = true) }
                 } else {
                     updateReceipt(receipt)
-                }
-
-                _viewState.update {
-                    it.copy(loadingMessage = null, details = it.details?.copy(editing = false))
+                    _viewState.update {
+                        it.copy(loadingMessage = null, details = it.details?.copy(editing = false))
+                    }
                 }
             } catch (cancellation: CancellationException) {
                 throw cancellation

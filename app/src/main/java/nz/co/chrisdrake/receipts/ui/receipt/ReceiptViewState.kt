@@ -29,6 +29,7 @@ data class ReceiptViewState(
         val onClickAddItem: () -> Unit,
         val onClickSave: () -> Unit,
         val onClickEdit: () -> Unit,
+        val onClickOpenImage: () -> Unit,
     ) {
         val formattedDateTime = time.formattedValue.takeIf { it.isNotBlank() }
             ?.let { "${date.formattedValue} at $it" }

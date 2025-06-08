@@ -3,4 +3,7 @@
     <files-path
         name="temp"
         path="tmp" />
+    <files-path
+        name="receipts"
+        path="receipts" />
 </paths>

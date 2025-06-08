@@ -13,9 +13,11 @@ import nz.co.chrisdrake.receipts.domain.GetPictureFile
 import nz.co.chrisdrake.receipts.domain.GetReceipt
 import nz.co.chrisdrake.receipts.domain.GetReceipts
 import nz.co.chrisdrake.receipts.domain.GetTempImageUri
+import nz.co.chrisdrake.receipts.domain.GetUriForFile
 import nz.co.chrisdrake.receipts.domain.PerformSync
 import nz.co.chrisdrake.receipts.domain.SaveReceipt
 import nz.co.chrisdrake.receipts.domain.ScanImage
+import nz.co.chrisdrake.receipts.domain.OpenImage
 import nz.co.chrisdrake.receipts.domain.SignIn
 import nz.co.chrisdrake.receipts.domain.SignOut
 import nz.co.chrisdrake.receipts.domain.SignUp
@@ -45,7 +47,11 @@ object DependencyRegistry {
 
         register { ReceiptRepository(dao = get(), remoteDataSource = get()) }
 
-        register { GetTempImageUri(context = application) }
+        register { GetUriForFile(context = application) }
+
+        register { GetTempImageUri(context = application, getUriForFile = get()) }
+
+        register { OpenImage(context = application, getUriForFile = get()) }
 
         register { GetPictureFile(context = application) }
 
