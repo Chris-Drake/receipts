@@ -1,9 +1,11 @@
 package nz.co.chrisdrake.receipts.ui.profile
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import nz.co.chrisdrake.receipts.DependencyRegistry.get
 import nz.co.chrisdrake.receipts.domain.auth.GetCurrentUser
 import nz.co.chrisdrake.receipts.domain.auth.SignOut
@@ -28,14 +30,16 @@ class ProfileViewModel(
     private fun attemptSignOut() {
         _viewState.update { it.copy(loading = true) }
 
-        try {
-            signOut()
+        viewModelScope.launch {
+            try {
+                signOut()
 
-            _viewState.update { it.copy(complete = true) }
-        } catch (cancellation: CancellationException) {
-            throw cancellation
-        } catch (exception: Exception) {
-            _viewState.update { it.copy(loading = false, errorMessage = exception.message) }
+                _viewState.update { it.copy(complete = true) }
+            } catch (cancellation: CancellationException) {
+                throw cancellation
+            } catch (exception: Exception) {
+                _viewState.update { it.copy(loading = false, errorMessage = exception.message) }
+            }
         }
     }
 }

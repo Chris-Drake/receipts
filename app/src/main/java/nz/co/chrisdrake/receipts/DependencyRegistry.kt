@@ -7,6 +7,7 @@ import androidx.room.Room
 import nz.co.chrisdrake.receipts.data.ReceiptDatabase
 import nz.co.chrisdrake.receipts.data.ReceiptRepository
 import nz.co.chrisdrake.receipts.data.RemoteDataSource
+import nz.co.chrisdrake.receipts.data.UserPreferencesRepository
 import nz.co.chrisdrake.receipts.domain.BackupReceiptsAsync
 import nz.co.chrisdrake.receipts.domain.DeleteReceipt
 import nz.co.chrisdrake.receipts.domain.GetReceipt
@@ -35,6 +36,8 @@ object DependencyRegistry {
     inline fun <reified T : Any> get(): T = dependencies.getValue(T::class).value as T
 
     fun registerApplicationDependencies(application: Application) {
+        register { UserPreferencesRepository(context = application) }
+
         register {
             application.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         }
@@ -79,13 +82,13 @@ object DependencyRegistry {
 
         register { GetCurrentUser() }
 
-        register { PerformSync(receiptRepository = get(), remoteDataSource = get(), getCurrentUser = get(), getPictureFile = get(), connectivityManager = get()) }
+        register { PerformSync(receiptRepository = get(), userPreferencesRepository = get(), remoteDataSource = get(), getCurrentUser = get(), getPictureFile = get(), connectivityManager = get()) }
 
         register { SignIn(performSync = get()) }
 
         register { SignUp() }
 
-        register { SignOut() }
+        register { SignOut(userPreferencesRepository = get()) }
     }
 
     private inline fun <reified T : Any> register(crossinline block: () -> T) {

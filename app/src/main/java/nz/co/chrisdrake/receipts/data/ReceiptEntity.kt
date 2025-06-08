@@ -63,8 +63,12 @@ data class RemoteReceiptEntity(
     @get:PropertyName("time") @set:PropertyName("time") var time: String? = null,
     @get:PropertyName("items") @set:PropertyName("items") var items: List<RemoteReceiptItemEntity> = emptyList(),
     @get:PropertyName("created_at") @set:PropertyName("created_at") var createdAt: Long = 0,
-    @get:PropertyName("updated_at") @set:PropertyName("updated_at") var updatedAt: Long = 0,
-)
+    @get:PropertyName(UPDATED_AT_PROPERTY_NAME) @set:PropertyName(UPDATED_AT_PROPERTY_NAME) var updatedAt: Long = 0,
+) {
+    companion object {
+        const val UPDATED_AT_PROPERTY_NAME = "updated_at"
+    }
+}
 
 @Keep
 data class RemoteReceiptItemEntity(

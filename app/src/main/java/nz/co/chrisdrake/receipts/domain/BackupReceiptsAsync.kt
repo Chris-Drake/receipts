@@ -31,7 +31,7 @@ class BackupReceiptsAsync(
             receipts.forEach { receipt ->
                 if (isActive && connectivityManager.isUnmeteredNetwork()) {
                     try {
-                        receiptRepository.backupReceipt(userId = currentUser.id, receipt = receipt)
+                        receiptRepository.backupReceipt(userId = currentUser.id, id = receipt.id)
                     } catch (cancellation: CancellationException) {
                         throw cancellation
                     } catch (exception: Exception) {

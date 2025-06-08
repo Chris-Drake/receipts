@@ -8,16 +8,18 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import kotlinx.coroutines.tasks.await
+import nz.co.chrisdrake.receipts.data.RemoteReceiptEntity.Companion.UPDATED_AT_PROPERTY_NAME
 import nz.co.chrisdrake.receipts.domain.model.Receipt
 import nz.co.chrisdrake.receipts.domain.model.ReceiptId
 import java.io.File
 
 class RemoteDataSource {
 
-    suspend fun getReceipts(userId: String): List<Receipt> {
-        return getReceiptsCollectionRef(userId).get().await().map { document ->
-            document.toObject(RemoteReceiptEntity::class.java).toDomain()
-        }
+    suspend fun getReceipts(userId: String, updatedAfter: Long): List<Receipt> {
+        return getReceiptsCollectionRef(userId)
+            .whereGreaterThan(UPDATED_AT_PROPERTY_NAME, updatedAfter).get()
+            .await()
+            .map { document -> document.toObject(RemoteReceiptEntity::class.java).toDomain() }
     }
 
     suspend fun saveReceipt(userId: String, receipt: Receipt) {

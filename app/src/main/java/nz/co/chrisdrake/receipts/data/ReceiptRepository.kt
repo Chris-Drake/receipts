@@ -30,7 +30,9 @@ class ReceiptRepository(
         dao.insertReceiptWithItems(receiptEntity, receiptItems)
     }
 
-    suspend fun backupReceipt(userId: String, receipt: Receipt) {
+    suspend fun backupReceipt(userId: String, id: ReceiptId) {
+        val receipt = getReceipt(id) ?: return
+
         if (receipt.backUpStatus == Completed || receipt.backUpStatus == InProgress) {
             return
         }

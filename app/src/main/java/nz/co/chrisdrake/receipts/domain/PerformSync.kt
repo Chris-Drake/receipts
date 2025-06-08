@@ -11,8 +11,10 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.flow.first
 import nz.co.chrisdrake.receipts.data.ReceiptRepository
 import nz.co.chrisdrake.receipts.data.RemoteDataSource
+import nz.co.chrisdrake.receipts.data.UserPreferencesRepository
 import nz.co.chrisdrake.receipts.domain.auth.GetCurrentUser
 import nz.co.chrisdrake.receipts.domain.image.GetPictureFile
 import nz.co.chrisdrake.receipts.domain.model.Receipt
@@ -23,6 +25,7 @@ class PerformSync(
     private val getPictureFile: GetPictureFile,
     private val remoteDataSource: RemoteDataSource,
     private val receiptRepository: ReceiptRepository,
+    private val userPreferencesRepository: UserPreferencesRepository,
     private val connectivityManager: ConnectivityManager,
 ) {
     private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
@@ -35,13 +38,19 @@ class PerformSync(
             // TODO: Start a foreground notification
 
             try {
+                val lastSyncTime = userPreferencesRepository.getLastSyncTime().first()
+
                 remoteDataSource
-                    .getReceipts(userId = userId)
+                    .getReceipts(userId = userId, updatedAfter = lastSyncTime)
                     .forEach { receipt ->
                         if (isActive && connectivityManager.isUnmeteredNetwork()) {
-                            receiptRepository.getReceipt(id = receipt.id) ?: import(receipt)
+                            receiptRepository.getReceipt(id = receipt.id)
+                                ?.takeUnless { it.updatedAt < receipt.updatedAt }
+                                ?: import(receipt)
                         }
                     }
+
+                userPreferencesRepository.saveLastSyncTime(System.currentTimeMillis())
             } catch (cancellation: Exception) {
                 throw cancellation
             } catch (exception: Exception) {
