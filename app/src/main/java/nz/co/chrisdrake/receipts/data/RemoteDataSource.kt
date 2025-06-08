@@ -8,8 +8,8 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import kotlinx.coroutines.tasks.await
-import nz.co.chrisdrake.receipts.domain.Receipt
-import nz.co.chrisdrake.receipts.domain.ReceiptId
+import nz.co.chrisdrake.receipts.domain.model.Receipt
+import nz.co.chrisdrake.receipts.domain.model.ReceiptId
 import java.io.File
 
 class RemoteDataSource {

@@ -1,4 +1,4 @@
-package nz.co.chrisdrake.receipts.domain
+package nz.co.chrisdrake.receipts.domain.image
 
 import android.content.Context
 import android.net.Uri
@@ -12,6 +12,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
+import nz.co.chrisdrake.receipts.domain.model.ReceiptItem
 import java.io.InputStream
 import java.time.LocalDate
 import java.time.LocalTime

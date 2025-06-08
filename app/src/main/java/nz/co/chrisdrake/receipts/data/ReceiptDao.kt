@@ -1,13 +1,12 @@
 package nz.co.chrisdrake.receipts.data
 
 import androidx.room.Dao
-import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
-import nz.co.chrisdrake.receipts.domain.ReceiptId
+import nz.co.chrisdrake.receipts.domain.model.ReceiptId
 
 @Dao
 interface ReceiptDao {

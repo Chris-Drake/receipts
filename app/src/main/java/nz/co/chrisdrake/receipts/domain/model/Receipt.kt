@@ -1,4 +1,4 @@
-package nz.co.chrisdrake.receipts.domain
+package nz.co.chrisdrake.receipts.domain.model
 
 import android.net.Uri
 import java.math.BigDecimal

@@ -10,6 +10,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import nz.co.chrisdrake.receipts.data.ReceiptRepository
+import nz.co.chrisdrake.receipts.domain.auth.GetCurrentUser
+import nz.co.chrisdrake.receipts.domain.model.Receipt
 import kotlin.coroutines.cancellation.CancellationException
 
 class BackupReceiptsAsync(

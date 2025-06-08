@@ -11,7 +11,9 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import nz.co.chrisdrake.receipts.data.ReceiptRepository
 import nz.co.chrisdrake.receipts.data.RemoteDataSource
-import java.io.File
+import nz.co.chrisdrake.receipts.domain.auth.GetCurrentUser
+import nz.co.chrisdrake.receipts.domain.image.GetPictureFile
+import nz.co.chrisdrake.receipts.domain.model.Receipt
 
 class PerformSync(
     private val getCurrentUser: GetCurrentUser,

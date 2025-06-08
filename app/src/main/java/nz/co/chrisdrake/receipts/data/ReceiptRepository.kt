@@ -2,12 +2,12 @@ package nz.co.chrisdrake.receipts.data
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import nz.co.chrisdrake.receipts.domain.BackupStatus
-import nz.co.chrisdrake.receipts.domain.BackupStatus.Completed
-import nz.co.chrisdrake.receipts.domain.BackupStatus.Failed
-import nz.co.chrisdrake.receipts.domain.BackupStatus.InProgress
-import nz.co.chrisdrake.receipts.domain.Receipt
-import nz.co.chrisdrake.receipts.domain.ReceiptId
+import nz.co.chrisdrake.receipts.domain.model.BackupStatus
+import nz.co.chrisdrake.receipts.domain.model.BackupStatus.Completed
+import nz.co.chrisdrake.receipts.domain.model.BackupStatus.Failed
+import nz.co.chrisdrake.receipts.domain.model.BackupStatus.InProgress
+import nz.co.chrisdrake.receipts.domain.model.Receipt
+import nz.co.chrisdrake.receipts.domain.model.ReceiptId
 
 class ReceiptRepository(
     private val dao: ReceiptDao,

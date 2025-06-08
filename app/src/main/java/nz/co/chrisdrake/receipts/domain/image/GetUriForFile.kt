@@ -1,4 +1,4 @@
-package nz.co.chrisdrake.receipts.domain
+package nz.co.chrisdrake.receipts.domain.image
 
 import android.content.Context
 import android.net.Uri

@@ -1,9 +1,9 @@
 package nz.co.chrisdrake.receipts.data
 
 import androidx.core.net.toUri
-import nz.co.chrisdrake.receipts.domain.BackupStatus
-import nz.co.chrisdrake.receipts.domain.Receipt
-import nz.co.chrisdrake.receipts.domain.ReceiptItem
+import nz.co.chrisdrake.receipts.domain.model.BackupStatus
+import nz.co.chrisdrake.receipts.domain.model.Receipt
+import nz.co.chrisdrake.receipts.domain.model.ReceiptItem
 import java.time.LocalDate
 import java.time.LocalTime
 

@@ -1,7 +1,8 @@
-package nz.co.chrisdrake.receipts.domain
+package nz.co.chrisdrake.receipts.domain.auth
 
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import nz.co.chrisdrake.receipts.domain.model.User
 
 class GetCurrentUser {
 

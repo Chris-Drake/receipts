@@ -6,22 +6,22 @@ import nz.co.chrisdrake.receipts.data.ReceiptDatabase
 import nz.co.chrisdrake.receipts.data.ReceiptRepository
 import nz.co.chrisdrake.receipts.data.RemoteDataSource
 import nz.co.chrisdrake.receipts.domain.BackupReceiptsAsync
-import nz.co.chrisdrake.receipts.domain.CopyPictureToInternalStorage
 import nz.co.chrisdrake.receipts.domain.DeleteReceipt
-import nz.co.chrisdrake.receipts.domain.GetCurrentUser
-import nz.co.chrisdrake.receipts.domain.GetPictureFile
 import nz.co.chrisdrake.receipts.domain.GetReceipt
 import nz.co.chrisdrake.receipts.domain.GetReceipts
-import nz.co.chrisdrake.receipts.domain.GetTempImageUri
-import nz.co.chrisdrake.receipts.domain.GetUriForFile
 import nz.co.chrisdrake.receipts.domain.PerformSync
 import nz.co.chrisdrake.receipts.domain.SaveReceipt
-import nz.co.chrisdrake.receipts.domain.ScanImage
-import nz.co.chrisdrake.receipts.domain.OpenImage
-import nz.co.chrisdrake.receipts.domain.SignIn
-import nz.co.chrisdrake.receipts.domain.SignOut
-import nz.co.chrisdrake.receipts.domain.SignUp
 import nz.co.chrisdrake.receipts.domain.UpdateReceipt
+import nz.co.chrisdrake.receipts.domain.auth.GetCurrentUser
+import nz.co.chrisdrake.receipts.domain.auth.SignIn
+import nz.co.chrisdrake.receipts.domain.auth.SignOut
+import nz.co.chrisdrake.receipts.domain.auth.SignUp
+import nz.co.chrisdrake.receipts.domain.image.CopyPictureToInternalStorage
+import nz.co.chrisdrake.receipts.domain.image.GetPictureFile
+import nz.co.chrisdrake.receipts.domain.image.GetTempImageUri
+import nz.co.chrisdrake.receipts.domain.image.GetUriForFile
+import nz.co.chrisdrake.receipts.domain.image.OpenImage
+import nz.co.chrisdrake.receipts.domain.image.ScanImage
 import kotlin.reflect.KClass
 
 object DependencyRegistry {

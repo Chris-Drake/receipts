@@ -5,8 +5,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import nz.co.chrisdrake.receipts.DependencyRegistry.get
-import nz.co.chrisdrake.receipts.domain.GetCurrentUser
-import nz.co.chrisdrake.receipts.domain.SignOut
+import nz.co.chrisdrake.receipts.domain.auth.GetCurrentUser
+import nz.co.chrisdrake.receipts.domain.auth.SignOut
 import kotlin.coroutines.cancellation.CancellationException
 
 class ProfileViewModel(

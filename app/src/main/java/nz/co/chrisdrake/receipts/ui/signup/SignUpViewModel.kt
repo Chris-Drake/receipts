@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import nz.co.chrisdrake.receipts.DependencyRegistry.get
-import nz.co.chrisdrake.receipts.domain.SignUp
+import nz.co.chrisdrake.receipts.domain.auth.SignUp
 import nz.co.chrisdrake.receipts.ui.common.InputFieldState
 import kotlin.coroutines.cancellation.CancellationException
 

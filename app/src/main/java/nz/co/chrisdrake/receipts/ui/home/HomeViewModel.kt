@@ -9,7 +9,7 @@ import kotlinx.coroutines.launch
 import nz.co.chrisdrake.receipts.DependencyRegistry.get
 import nz.co.chrisdrake.receipts.domain.GetReceipts
 import nz.co.chrisdrake.receipts.domain.PerformSync
-import nz.co.chrisdrake.receipts.domain.Receipt
+import nz.co.chrisdrake.receipts.domain.model.Receipt
 import nz.co.chrisdrake.receipts.ui.common.DATE_FORMATTER
 import nz.co.chrisdrake.receipts.ui.common.TIME_FORMATTER
 

@@ -1,18 +1,14 @@
-package nz.co.chrisdrake.receipts.domain
+package nz.co.chrisdrake.receipts.domain.auth
 
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.tasks.await
 
-class SignIn(
-    private val performSync: PerformSync,
-) {
+class SignUp {
 
     suspend operator fun invoke(email: String, password: String) {
         Firebase.auth
-            .signInWithEmailAndPassword(email, password)
+            .createUserWithEmailAndPassword(email, password)
             .await()
-
-        performSync()
     }
 }

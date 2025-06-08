@@ -39,7 +39,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.serialization.Serializable
-import nz.co.chrisdrake.receipts.domain.ReceiptId
+import nz.co.chrisdrake.receipts.domain.model.ReceiptId
 import nz.co.chrisdrake.receipts.ui.theme.AppTheme
 
 @Serializable

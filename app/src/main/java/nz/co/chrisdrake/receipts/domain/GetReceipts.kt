@@ -4,6 +4,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.onEach
 import nz.co.chrisdrake.receipts.DependencyRegistry.get
 import nz.co.chrisdrake.receipts.data.ReceiptRepository
+import nz.co.chrisdrake.receipts.domain.model.Receipt
 
 class GetReceipts(
     private val repository: ReceiptRepository,

@@ -9,9 +9,9 @@ import androidx.room.Index
 import androidx.room.PrimaryKey
 import androidx.room.Relation
 import com.google.firebase.firestore.PropertyName
-import nz.co.chrisdrake.receipts.domain.BackupStatus
-import nz.co.chrisdrake.receipts.domain.ReceiptId
-import nz.co.chrisdrake.receipts.domain.ReceiptItemId
+import nz.co.chrisdrake.receipts.domain.model.BackupStatus
+import nz.co.chrisdrake.receipts.domain.model.ReceiptId
+import nz.co.chrisdrake.receipts.domain.model.ReceiptItemId
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalTime

@@ -1,4 +1,4 @@
-package nz.co.chrisdrake.receipts.domain
+package nz.co.chrisdrake.receipts.domain.model
 
 data class User(
     val id: String,
