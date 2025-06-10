@@ -1,5 +1,6 @@
 package nz.co.chrisdrake.receipts.ui.home
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -13,6 +14,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -31,6 +33,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.serialization.Serializable
 import nz.co.chrisdrake.receipts.domain.model.ReceiptId
+import nz.co.chrisdrake.receipts.ui.home.search.SearchBar
+import nz.co.chrisdrake.receipts.ui.home.search.SearchBarState
 import nz.co.chrisdrake.receipts.ui.theme.AppTheme
 
 @Serializable
@@ -59,14 +63,28 @@ private fun Content(
 ) {
     Scaffold(
         topBar = {
-            TopBar(onClickProfile = navigateToProfile)
+            AnimatedContent(viewState.searchBar.expanded) {
+                if (it) {
+                    SearchBar(
+                        state = viewState.searchBar,
+                        navigateToReceipt = navigateToReceipt,
+                    )
+                } else {
+                    TopBar(
+                        onClickProfile = navigateToProfile,
+                        onClickSearch = viewState.onClickSearch,
+                    )
+                }
+            }
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = { navigateToReceipt(null) }) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = "Add",
-                )
+            if (!viewState.searchBar.expanded) {
+                FloatingActionButton(onClick = { navigateToReceipt(null) }) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = "Add",
+                    )
+                }
             }
         }
     ) { innerPadding ->
@@ -109,12 +127,22 @@ private fun Content(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun TopBar(onClickProfile: () -> Unit) {
+private fun TopBar(
+    onClickProfile: () -> Unit,
+    onClickSearch: () -> Unit,
+) {
     CenterAlignedTopAppBar(
         title = {
             Text(text = "Receipts")
         },
         actions = {
+            IconButton(onClick = onClickSearch) {
+                Icon(
+                    imageVector = Icons.Default.Search,
+                    contentDescription = "Search",
+                )
+            }
+
             IconButton(onClick = onClickProfile) {
                 Icon(
                     imageVector = Icons.Default.Person,
@@ -145,7 +173,11 @@ private fun EmptyState(
 private fun Content_WithReceipts() {
     AppTheme {
         Content(
-            viewState = HomeViewState(receipts = listOf(preview_ReceiptListItem())),
+            viewState = HomeViewState(
+                receipts = listOf(preview_ReceiptListItem()),
+                searchBar = SearchBarState(onQueryChange = {}, onExpandedChange = {}),
+                onClickSearch = {},
+            ),
             navigateToProfile = {},
             navigateToReceipt = {},
         )
@@ -157,7 +189,11 @@ private fun Content_WithReceipts() {
 private fun Content_Empty() {
     AppTheme {
         Content(
-            viewState = HomeViewState(receipts = emptyList()),
+            viewState = HomeViewState(
+                receipts = emptyList(),
+                searchBar = SearchBarState(onQueryChange = {}, onExpandedChange = {}),
+                onClickSearch = {},
+            ),
             navigateToProfile = {},
             navigateToReceipt = {},
         )

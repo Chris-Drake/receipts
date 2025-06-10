@@ -9,16 +9,29 @@ import kotlinx.coroutines.launch
 import nz.co.chrisdrake.receipts.DependencyRegistry.get
 import nz.co.chrisdrake.receipts.domain.GetReceipts
 import nz.co.chrisdrake.receipts.domain.PerformSync
+import nz.co.chrisdrake.receipts.domain.SearchReceipts
 import nz.co.chrisdrake.receipts.domain.model.Receipt
 import nz.co.chrisdrake.receipts.ui.common.DATE_FORMATTER
 import nz.co.chrisdrake.receipts.ui.common.TIME_FORMATTER
+import nz.co.chrisdrake.receipts.ui.home.search.SearchBarState
 
 class HomeViewModel(
     private val getReceipts: GetReceipts = get(),
+    private val searchReceipts: SearchReceipts = get(),
     performSync: PerformSync = get(),
 ) : ViewModel() {
 
-    private val _viewState = MutableStateFlow(HomeViewState())
+    private var receipts: List<Receipt> = emptyList()
+
+    private val _viewState = MutableStateFlow(
+        HomeViewState(
+            searchBar = SearchBarState(
+                onQueryChange = ::onSearchQueryChange,
+                onExpandedChange = ::onSearchBarExpandedChange,
+            ),
+            onClickSearch = { onSearchBarExpandedChange(true) },
+        )
+    )
 
     val viewState: StateFlow<HomeViewState> = _viewState
 
@@ -29,9 +42,29 @@ class HomeViewModel(
 
     private fun loadReceipts() = viewModelScope.launch {
         getReceipts().collect { receipts ->
+            this@HomeViewModel.receipts = receipts
+
             val receiptListItems = receipts.map { it.toListItem() }
 
             _viewState.update { it.copy(receipts = receiptListItems) }
+        }
+    }
+
+    private fun onSearchQueryChange(query: String) {
+        _viewState.update {
+            it.copy(
+                searchBar = it.searchBar.copy(
+                    query = query,
+                    results = searchReceipts(receipts = receipts, query = query)
+                        .map { receipt -> receipt.toListItem() },
+                )
+            )
+        }
+    }
+
+    private fun onSearchBarExpandedChange(expanded: Boolean) {
+        _viewState.update {
+            it.copy(searchBar = it.searchBar.copy(expanded = expanded))
         }
     }
 

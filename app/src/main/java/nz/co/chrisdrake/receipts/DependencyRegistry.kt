@@ -14,6 +14,7 @@ import nz.co.chrisdrake.receipts.domain.GetReceipt
 import nz.co.chrisdrake.receipts.domain.GetReceipts
 import nz.co.chrisdrake.receipts.domain.PerformSync
 import nz.co.chrisdrake.receipts.domain.SaveReceipt
+import nz.co.chrisdrake.receipts.domain.SearchReceipts
 import nz.co.chrisdrake.receipts.domain.UpdateReceipt
 import nz.co.chrisdrake.receipts.domain.auth.GetCurrentUser
 import nz.co.chrisdrake.receipts.domain.auth.SignIn
@@ -73,6 +74,8 @@ object DependencyRegistry {
         register { UpdateReceipt(repository = get()) }
 
         register { DeleteReceipt(repository = get(), getCurrentUser = get()) }
+
+        register { SearchReceipts() }
 
         register { BackupReceiptsAsync(receiptRepository = get(), getCurrentUser = get(), connectivityManager = get()) }
 
