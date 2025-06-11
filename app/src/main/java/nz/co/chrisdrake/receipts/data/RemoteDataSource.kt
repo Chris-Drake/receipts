@@ -2,6 +2,7 @@ package nz.co.chrisdrake.receipts.data
 
 import android.net.Uri
 import androidx.core.net.toFile
+import androidx.core.net.toUri
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.ktx.firestore
@@ -11,6 +12,7 @@ import kotlinx.coroutines.tasks.await
 import nz.co.chrisdrake.receipts.data.RemoteReceiptEntity.Companion.UPDATED_AT_PROPERTY_NAME
 import nz.co.chrisdrake.receipts.domain.model.Receipt
 import nz.co.chrisdrake.receipts.domain.model.ReceiptId
+import nz.co.chrisdrake.receipts.domain.model.ReceiptImageDownloadPaths
 import java.io.File
 
 class RemoteDataSource {
@@ -22,25 +24,51 @@ class RemoteDataSource {
             .map { document -> document.toObject(RemoteReceiptEntity::class.java).toDomain() }
     }
 
-    suspend fun saveReceipt(userId: String, receipt: Receipt) {
-        val imagePath = storeImage(
+    suspend fun uploadImages(userId: String, receipt: Receipt): ReceiptImageDownloadPaths {
+        val imageFilePaths = checkNotNull(receipt.imageFilePaths)
+
+        val imageDownloadPath = storeImage(
             userId = userId,
-            fileUri = receipt.imageUri,
+            receiptId = receipt.id,
+            fileUri = File(checkNotNull(imageFilePaths.original)).toUri(),
         )
 
+        val thumbnailDownloadPath = storeImage(
+            userId = userId,
+            receiptId = receipt.id,
+            fileUri = File(imageFilePaths.thumbnail).toUri(),
+        )
+
+        return ReceiptImageDownloadPaths(
+            original = imageDownloadPath,
+            thumbnail = thumbnailDownloadPath,
+        )
+    }
+
+    suspend fun saveReceipt(
+        userId: String,
+        receipt: Receipt,
+        downloadPaths: ReceiptImageDownloadPaths,
+    ) {
+        val remoteEntity = receipt.toRemoteEntity(downloadPaths = downloadPaths)
+
         getReceiptDocumentRef(userId = userId, receiptId = receipt.id)
-            .set(receipt.toRemoteEntity(imagePath = imagePath))
+            .set(remoteEntity)
             .await()
     }
 
-    private suspend fun storeImage(userId: String, fileUri: Uri): String {
+    private suspend fun storeImage(userId: String, receiptId: ReceiptId, fileUri: Uri): String {
         val imageFile = fileUri.toFile()
         val imageRef = Firebase.storage.reference
-            .child("/receipts/${userId}/${imageFile.name}")
+            .child("/users/${userId}/receipts/${receiptId}/${imageFile.name}")
 
         imageRef.putFile(fileUri).await()
 
         return imageRef.path
+    }
+
+    suspend fun getImageDownloadUrl(path: String): Uri {
+        return Firebase.storage.reference.child(path).downloadUrl.await()
     }
 
     suspend fun getImage(path: String, destinationFile: File) {

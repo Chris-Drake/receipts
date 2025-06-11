@@ -44,13 +44,24 @@ class ReceiptRepository(
         setBackupStatus(InProgress)
 
         try {
-            remoteDataSource.saveReceipt(userId = userId, receipt = receipt)
+            val downloadPaths = remoteDataSource.uploadImages(userId = userId, receipt = receipt)
+
+            remoteDataSource.saveReceipt(
+                userId = userId,
+                receipt = receipt,
+                downloadPaths = downloadPaths,
+            )
+
+            updateReceipt(
+                receipt = receipt.copy(
+                    imageDownloadPaths = downloadPaths,
+                    backUpStatus = Completed,
+                )
+            )
         } catch (exception: Exception) {
             setBackupStatus(Failed)
             throw exception
         }
-
-        setBackupStatus(Completed)
     }
 
     suspend fun updateReceipt(receipt: Receipt) {

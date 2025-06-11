@@ -1,6 +1,5 @@
 package nz.co.chrisdrake.receipts.domain.model
 
-import android.net.Uri
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.time.LocalDate
@@ -11,7 +10,8 @@ typealias ReceiptItemId = String
 
 data class Receipt(
     val id: ReceiptId,
-    val imageUri: Uri,
+    val imageFilePaths: ReceiptImageFilePaths?,
+    val imageDownloadPaths: ReceiptImageDownloadPaths?,
     val merchant: String,
     val date: LocalDate,
     val time: LocalTime?,
@@ -27,6 +27,16 @@ data class Receipt(
         check(items.isNotEmpty()) { "Receipt must have at least one item" }
     }
 }
+
+data class ReceiptImageFilePaths(
+    val original: String?,
+    val thumbnail: String,
+)
+
+data class ReceiptImageDownloadPaths(
+    val original: String,
+    val thumbnail: String,
+)
 
 data class ReceiptItem(
     val id: ReceiptItemId,

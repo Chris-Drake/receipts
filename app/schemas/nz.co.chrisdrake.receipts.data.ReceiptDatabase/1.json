@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "bb13ffb7d716aa7d80f110c4091fedb5",
+    "identityHash": "406d00998518b4ca230e7ef52bf2ec05",
     "entities": [
       {
         "tableName": "receipts",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`receipt_id` TEXT NOT NULL, `receipt_image_uri` TEXT NOT NULL, `receipt_merchant` TEXT NOT NULL, `receipt_date` TEXT NOT NULL, `receipt_time` TEXT, `receipt_backup_status` TEXT NOT NULL, `receipt_created_at` INTEGER NOT NULL, `receipt_updated_at` INTEGER NOT NULL, `receipt_accessed_at` INTEGER, PRIMARY KEY(`receipt_id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`receipt_id` TEXT NOT NULL, `receipt_thumbnail_path` TEXT NOT NULL, `receipt_thumbnail_download_path` TEXT, `receipt_image_path` TEXT, `receipt_image_download_path` TEXT, `receipt_merchant` TEXT NOT NULL, `receipt_date` TEXT NOT NULL, `receipt_time` TEXT, `receipt_backup_status` TEXT NOT NULL, `receipt_created_at` INTEGER NOT NULL, `receipt_updated_at` INTEGER NOT NULL, `receipt_accessed_at` INTEGER, PRIMARY KEY(`receipt_id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -15,10 +15,25 @@
             "notNull": true
           },
           {
-            "fieldPath": "imageUri",
-            "columnName": "receipt_image_uri",
+            "fieldPath": "thumbnailPath",
+            "columnName": "receipt_thumbnail_path",
             "affinity": "TEXT",
             "notNull": true
+          },
+          {
+            "fieldPath": "thumbnailDownloadPath",
+            "columnName": "receipt_thumbnail_download_path",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "imagePath",
+            "columnName": "receipt_image_path",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "imageDownloadPath",
+            "columnName": "receipt_image_download_path",
+            "affinity": "TEXT"
           },
           {
             "fieldPath": "merchant",
@@ -131,7 +146,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'bb13ffb7d716aa7d80f110c4091fedb5')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '406d00998518b4ca230e7ef52bf2ec05')"
     ]
   }
 }

@@ -19,7 +19,10 @@ import java.time.LocalTime
 @Entity(tableName = "receipts")
 data class ReceiptEntity(
     @ColumnInfo(name = "receipt_id") @PrimaryKey val id: ReceiptId,
-    @ColumnInfo(name = "receipt_image_uri") val imageUri: String,
+    @ColumnInfo(name = "receipt_thumbnail_path") val thumbnailPath: String,
+    @ColumnInfo(name = "receipt_thumbnail_download_path") val thumbnailDownloadPath: String?,
+    @ColumnInfo(name = "receipt_image_path") val imagePath: String?,
+    @ColumnInfo(name = "receipt_image_download_path") val imageDownloadPath: String?,
     @ColumnInfo(name = "receipt_merchant") val merchant: String,
     @ColumnInfo(name = "receipt_date") val date: LocalDate,
     @ColumnInfo(name = "receipt_time") val time: LocalTime?,
@@ -58,7 +61,8 @@ data class ReceiptWithItemsEntity(
 @Keep
 data class RemoteReceiptEntity(
     @get:PropertyName("id") @set:PropertyName("id") var id: String = "",
-    @get:PropertyName("image_path") @set:PropertyName("image_path") var imagePath: String = "",
+    @get:PropertyName("thumbnail_download_path") @set:PropertyName("thumbnail_download_path") var thumbnailDownloadPath: String = "",
+    @get:PropertyName("image_download_path") @set:PropertyName("image_download_path") var imageDownloadPath: String = "",
     @get:PropertyName("merchant") @set:PropertyName("merchant") var merchant: String = "",
     @get:PropertyName("date") @set:PropertyName("date") var date: String = "",
     @get:PropertyName("time") @set:PropertyName("time") var time: String? = null,

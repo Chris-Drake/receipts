@@ -11,10 +11,11 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import nz.co.chrisdrake.receipts.DependencyRegistry.get
 import nz.co.chrisdrake.receipts.domain.DeleteReceipt
+import nz.co.chrisdrake.receipts.domain.GetOriginalImageUri
 import nz.co.chrisdrake.receipts.domain.GetReceipt
 import nz.co.chrisdrake.receipts.domain.SaveReceipt
 import nz.co.chrisdrake.receipts.domain.UpdateReceipt
-import nz.co.chrisdrake.receipts.domain.image.CopyPictureToInternalStorage
+import nz.co.chrisdrake.receipts.domain.image.CopyImagesToInternalStorage
 import nz.co.chrisdrake.receipts.domain.image.GetTempImageUri
 import nz.co.chrisdrake.receipts.domain.image.OpenImage
 import nz.co.chrisdrake.receipts.domain.image.ScanImage
@@ -36,7 +37,8 @@ class ReceiptViewModel(
     private val existingId: ReceiptId?,
     getTempImageUri: GetTempImageUri = get(),
     private val openImage: OpenImage = get(),
-    private val copyPictureToInternalStorage: CopyPictureToInternalStorage = get(),
+    private val copyImagesToInternalStorage: CopyImagesToInternalStorage = get(),
+    private val getOriginalImageUri: GetOriginalImageUri = get(),
     private val scanImage: ScanImage = get(),
     private val getReceipt: GetReceipt = get(),
     private val saveReceipt: SaveReceipt = get(),
@@ -67,7 +69,7 @@ class ReceiptViewModel(
 
         viewModelScope.launch {
             existingReceipt = getReceipt(id = id).also {
-                initializeDetails(receipt = it, imageUri = it.imageUri)
+                initializeDetails(receipt = it, imageUri = getOriginalImageUri(it))
             }
         }
     }
@@ -174,11 +176,12 @@ class ReceiptViewModel(
             _viewState.update { it.copy(loadingMessage = "Saving…") }
 
             val id = existingReceipt?.id ?: UUID.randomUUID().toString()
-            val imageUri = copyPictureToInternalStorage(uri = details.imageUri, receiptId = id)
+            val imageFilePaths = copyImagesToInternalStorage(uri = details.imageUri, receiptId = id)
 
             val receipt = Receipt(
                 id = id,
-                imageUri = imageUri,
+                imageFilePaths = imageFilePaths,
+                imageDownloadPaths = null,
                 merchant = merchant,
                 date = date,
                 time = time,

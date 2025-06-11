@@ -35,6 +35,13 @@ interface ReceiptDao {
     suspend fun updateReceipt(receipt: ReceiptEntity)
 
     @Transaction
+    suspend fun updateReceipts(receipts: List<ReceiptWithItemsEntity>) {
+        receipts.forEach {
+            updateReceiptWithItems(receipt = it.receipt, items = it.items)
+        }
+    }
+
+    @Transaction
     suspend fun updateReceiptWithItems(receipt: ReceiptEntity, items: List<ReceiptItemEntity>) {
         updateReceipt(receipt)
         deleteReceiptItems(receipt.id)

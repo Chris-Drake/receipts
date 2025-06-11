@@ -10,6 +10,7 @@ import nz.co.chrisdrake.receipts.data.RemoteDataSource
 import nz.co.chrisdrake.receipts.data.UserPreferencesRepository
 import nz.co.chrisdrake.receipts.domain.BackupReceiptsAsync
 import nz.co.chrisdrake.receipts.domain.DeleteReceipt
+import nz.co.chrisdrake.receipts.domain.GetOriginalImageUri
 import nz.co.chrisdrake.receipts.domain.GetReceipt
 import nz.co.chrisdrake.receipts.domain.GetReceipts
 import nz.co.chrisdrake.receipts.domain.PerformSync
@@ -20,8 +21,8 @@ import nz.co.chrisdrake.receipts.domain.auth.GetCurrentUser
 import nz.co.chrisdrake.receipts.domain.auth.SignIn
 import nz.co.chrisdrake.receipts.domain.auth.SignOut
 import nz.co.chrisdrake.receipts.domain.auth.SignUp
-import nz.co.chrisdrake.receipts.domain.image.CopyPictureToInternalStorage
-import nz.co.chrisdrake.receipts.domain.image.GetPictureFile
+import nz.co.chrisdrake.receipts.domain.image.CopyImagesToInternalStorage
+import nz.co.chrisdrake.receipts.domain.image.CreateImageFilePaths
 import nz.co.chrisdrake.receipts.domain.image.GetTempImageUri
 import nz.co.chrisdrake.receipts.domain.image.GetUriForFile
 import nz.co.chrisdrake.receipts.domain.image.OpenImage
@@ -63,9 +64,11 @@ object DependencyRegistry {
 
         register { OpenImage(context = application, getUriForFile = get()) }
 
-        register { GetPictureFile(context = application) }
+        register { GetOriginalImageUri(remoteDataSource = get()) }
 
-        register { CopyPictureToInternalStorage(context = application, getPictureFile = get()) }
+        register { CreateImageFilePaths(context = application) }
+
+        register { CopyImagesToInternalStorage(context = application, createImageFilePaths = get()) }
 
         register { ScanImage(context = application) }
 
@@ -85,7 +88,7 @@ object DependencyRegistry {
 
         register { GetCurrentUser() }
 
-        register { PerformSync(receiptRepository = get(), userPreferencesRepository = get(), remoteDataSource = get(), getCurrentUser = get(), getPictureFile = get(), connectivityManager = get()) }
+        register { PerformSync(receiptRepository = get(), userPreferencesRepository = get(), remoteDataSource = get(), getCurrentUser = get(), createImageFilePaths = get(), connectivityManager = get()) }
 
         register { SignIn(performSync = get()) }
 

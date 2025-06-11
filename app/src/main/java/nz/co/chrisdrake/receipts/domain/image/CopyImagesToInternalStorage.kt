@@ -4,28 +4,33 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
-import androidx.core.net.toUri
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import nz.co.chrisdrake.receipts.domain.model.ReceiptImageFilePaths
+import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStream
 
-class CopyPictureToInternalStorage(
+class CopyImagesToInternalStorage(
     private val context: Context,
-    private val getPictureFile: GetPictureFile,
+    private val createImageFilePaths: CreateImageFilePaths,
 ) {
 
-    suspend operator fun invoke(uri: Uri, receiptId: String): Uri = withContext(Dispatchers.IO) {
-        val target = getPictureFile(receiptId = receiptId)
-        val inSampleSize = calculateInSampleSize(uri)
+    suspend operator fun invoke(uri: Uri, receiptId: String): ReceiptImageFilePaths = withContext(Dispatchers.IO) {
+        createImageFilePaths(receiptId = receiptId).also {
+            copyPicture(uri = uri, target = File(checkNotNull(it.original)), maxHeight = 2000)
+            copyPicture(uri = uri, target = File(it.thumbnail), maxHeight = 320)
+        }
+    }
+
+    private fun copyPicture(uri: Uri, target: File, maxHeight: Int) {
+        val inSampleSize = calculateInSampleSize(uri = uri, maxHeight = maxHeight)
 
         openInputStream(uri).use { input ->
             target.outputStream().use { output ->
                 compressBitmap(input = input, output = output, inSampleSize = inSampleSize)
             }
         }
-
-        target.toUri()
     }
 
     private fun compressBitmap(input: InputStream, output: FileOutputStream, inSampleSize: Int) {
@@ -39,7 +44,7 @@ class CopyPictureToInternalStorage(
         }
     }
 
-    private fun calculateInSampleSize(uri: Uri, maxWidth: Int = 1500): Int {
+    private fun calculateInSampleSize(uri: Uri, maxHeight: Int): Int {
         openInputStream(uri).use { input ->
             val options = BitmapFactory.Options().apply {
                 inJustDecodeBounds = true
@@ -47,10 +52,10 @@ class CopyPictureToInternalStorage(
 
             BitmapFactory.decodeStream(input, null, options)
 
-            val originalWidth = options.outWidth
+            val originalHeight = options.outHeight
 
-            return if (originalWidth > maxWidth) {
-                originalWidth / maxWidth
+            return if (originalHeight > maxHeight) {
+                originalHeight / maxHeight
             } else {
                 1
             }

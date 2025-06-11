@@ -1,28 +1,31 @@
 package nz.co.chrisdrake.receipts.domain
 
 import android.net.ConnectivityManager
-import androidx.core.net.toUri
 import com.google.firebase.crashlytics.ktx.crashlytics
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import kotlinx.coroutines.flow.first
 import nz.co.chrisdrake.receipts.data.ReceiptRepository
 import nz.co.chrisdrake.receipts.data.RemoteDataSource
 import nz.co.chrisdrake.receipts.data.UserPreferencesRepository
 import nz.co.chrisdrake.receipts.domain.auth.GetCurrentUser
-import nz.co.chrisdrake.receipts.domain.image.GetPictureFile
+import nz.co.chrisdrake.receipts.domain.image.CreateImageFilePaths
 import nz.co.chrisdrake.receipts.domain.model.Receipt
 import nz.co.chrisdrake.receipts.util.isUnmeteredNetwork
+import java.io.File
 
 class PerformSync(
     private val getCurrentUser: GetCurrentUser,
-    private val getPictureFile: GetPictureFile,
+    private val createImageFilePaths: CreateImageFilePaths,
     private val remoteDataSource: RemoteDataSource,
     private val receiptRepository: ReceiptRepository,
     private val userPreferencesRepository: UserPreferencesRepository,
@@ -59,13 +62,21 @@ class PerformSync(
         }
     }
 
-    private suspend fun import(receipt: Receipt) {
-        val pictureFile = getPictureFile(receiptId = receipt.id)
+    private suspend fun import(receipt: Receipt) = coroutineScope {
+        val imagePaths = createImageFilePaths(receiptId = receipt.id)
+        val imageDownloadPaths = checkNotNull(receipt.imageDownloadPaths)
 
-        remoteDataSource.getImage(receipt.imageUri.toString(), pictureFile)
-
-        receiptRepository.saveReceipt(
-            receipt.copy(imageUri = pictureFile.toUri())
+        awaitAll(
+            async {
+                remoteDataSource
+                    .getImage(imageDownloadPaths.original, File(checkNotNull(imagePaths.original)))
+            },
+            async {
+                remoteDataSource
+                    .getImage(imageDownloadPaths.thumbnail, File(imagePaths.thumbnail))
+            }
         )
+
+        receiptRepository.saveReceipt(receipt.copy(imageFilePaths = imagePaths))
     }
 }

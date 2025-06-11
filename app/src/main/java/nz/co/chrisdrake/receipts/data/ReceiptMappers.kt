@@ -1,8 +1,9 @@
 package nz.co.chrisdrake.receipts.data
 
-import androidx.core.net.toUri
 import nz.co.chrisdrake.receipts.domain.model.BackupStatus
 import nz.co.chrisdrake.receipts.domain.model.Receipt
+import nz.co.chrisdrake.receipts.domain.model.ReceiptImageDownloadPaths
+import nz.co.chrisdrake.receipts.domain.model.ReceiptImageFilePaths
 import nz.co.chrisdrake.receipts.domain.model.ReceiptItem
 import java.time.LocalDate
 import java.time.LocalTime
@@ -10,7 +11,18 @@ import java.time.LocalTime
 fun ReceiptEntity.toDomain(items: List<ReceiptItemEntity>): Receipt {
     return Receipt(
         id = id,
-        imageUri = imageUri.toUri(),
+        imageFilePaths = ReceiptImageFilePaths(
+            original = imagePath,
+            thumbnail = thumbnailPath,
+        ),
+        imageDownloadPaths = imageDownloadPath?.let {
+            thumbnailDownloadPath?.let {
+                ReceiptImageDownloadPaths(
+                    original = imageDownloadPath,
+                    thumbnail = thumbnailDownloadPath,
+                )
+            }
+        },
         merchant = merchant,
         date = date,
         time = time,
@@ -38,7 +50,10 @@ fun Receipt.toEntity(): ReceiptWithItemsEntity {
     return ReceiptWithItemsEntity(
         receipt = ReceiptEntity(
             id = id,
-            imageUri = imageUri.toString(),
+            thumbnailPath = checkNotNull(imageFilePaths).thumbnail,
+            thumbnailDownloadPath = imageDownloadPaths?.thumbnail,
+            imagePath = imageFilePaths.original,
+            imageDownloadPath = imageDownloadPaths?.original,
             merchant = merchant,
             date = date,
             time = time,
@@ -60,10 +75,11 @@ private fun ReceiptItem.toEntity(receiptId: String): ReceiptItemEntity {
     )
 }
 
-fun Receipt.toRemoteEntity(imagePath: String): RemoteReceiptEntity {
+fun Receipt.toRemoteEntity(downloadPaths: ReceiptImageDownloadPaths): RemoteReceiptEntity {
     return RemoteReceiptEntity(
         id = id,
-        imagePath = imagePath,
+        thumbnailDownloadPath = downloadPaths.thumbnail,
+        imageDownloadPath = downloadPaths.original,
         merchant = merchant,
         date = date.toString(),
         time = time?.toString(),
@@ -82,7 +98,11 @@ fun Receipt.toRemoteEntity(imagePath: String): RemoteReceiptEntity {
 fun RemoteReceiptEntity.toDomain(): Receipt {
     return Receipt(
         id = id,
-        imageUri = imagePath.toUri(),
+        imageFilePaths = null,
+        imageDownloadPaths = ReceiptImageDownloadPaths(
+            original = imageDownloadPath,
+            thumbnail = thumbnailDownloadPath,
+        ),
         merchant = merchant,
         date = LocalDate.parse(date),
         time = time?.let { LocalTime.parse(it) },

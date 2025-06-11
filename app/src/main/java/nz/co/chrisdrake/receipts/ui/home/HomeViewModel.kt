@@ -74,7 +74,7 @@ class HomeViewModel(
 
         return ReceiptListItem(
             id = id,
-            imageUri = imageUri.toString(),
+            imageUri = checkNotNull(imageFilePaths).thumbnail,
             merchant = merchant,
             dateTime = time?.let { "$date at $time" } ?: date,
             itemCount = "${items.size} item${if (items.size == 1) "" else "s"}",
