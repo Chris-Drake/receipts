@@ -6,6 +6,11 @@ import nz.co.chrisdrake.receipts.domain.model.ReceiptId
 
 class GetReceipt(private val repository: ReceiptRepository) {
 
-    suspend operator fun invoke(id: ReceiptId): Receipt =
-        checkNotNull(repository.getReceipt(id = id))
+    suspend operator fun invoke(id: ReceiptId): Receipt {
+        val receipt = checkNotNull(repository.getReceipt(id = id))
+
+        repository.updateReceipt(receipt.copy(accessedAt = System.currentTimeMillis()))
+
+        return receipt
+    }
 }

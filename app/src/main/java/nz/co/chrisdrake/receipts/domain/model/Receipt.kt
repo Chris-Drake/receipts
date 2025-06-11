@@ -19,6 +19,7 @@ data class Receipt(
     val backUpStatus: BackupStatus,
     val createdAt: Long,
     val updatedAt: Long,
+    val accessedAt: Long?,
 ) {
     val totalAmount: BigDecimal = items.sumOf { it.amount }.setScale(2, RoundingMode.HALF_UP)
 

@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "43273270c121ea3747fab7cda26789cd",
+    "identityHash": "bb13ffb7d716aa7d80f110c4091fedb5",
     "entities": [
       {
         "tableName": "receipts",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`receipt_id` TEXT NOT NULL, `receipt_image_uri` TEXT NOT NULL, `receipt_merchant` TEXT NOT NULL, `receipt_date` TEXT NOT NULL, `receipt_time` TEXT, `receipt_backup_status` TEXT NOT NULL, `receipt_created_at` INTEGER NOT NULL, `receipt_updated_at` INTEGER NOT NULL, PRIMARY KEY(`receipt_id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`receipt_id` TEXT NOT NULL, `receipt_image_uri` TEXT NOT NULL, `receipt_merchant` TEXT NOT NULL, `receipt_date` TEXT NOT NULL, `receipt_time` TEXT, `receipt_backup_status` TEXT NOT NULL, `receipt_created_at` INTEGER NOT NULL, `receipt_updated_at` INTEGER NOT NULL, `receipt_accessed_at` INTEGER, PRIMARY KEY(`receipt_id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -54,6 +54,11 @@
             "columnName": "receipt_updated_at",
             "affinity": "INTEGER",
             "notNull": true
+          },
+          {
+            "fieldPath": "accessedAt",
+            "columnName": "receipt_accessed_at",
+            "affinity": "INTEGER"
           }
         ],
         "primaryKey": {
@@ -126,7 +131,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '43273270c121ea3747fab7cda26789cd')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'bb13ffb7d716aa7d80f110c4091fedb5')"
     ]
   }
 }

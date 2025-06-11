@@ -186,6 +186,7 @@ class ReceiptViewModel(
                 backUpStatus = BackupStatus.NotStarted,
                 createdAt = existingReceipt?.createdAt ?: System.currentTimeMillis(),
                 updatedAt = System.currentTimeMillis(),
+                accessedAt = System.currentTimeMillis(),
             )
 
             try {

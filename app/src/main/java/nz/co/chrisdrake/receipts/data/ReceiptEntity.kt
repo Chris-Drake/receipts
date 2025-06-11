@@ -26,6 +26,7 @@ data class ReceiptEntity(
     @ColumnInfo(name = "receipt_backup_status") val backupStatus: BackupStatus,
     @ColumnInfo(name = "receipt_created_at") val createdAt: Long,
     @ColumnInfo(name = "receipt_updated_at") val updatedAt: Long,
+    @ColumnInfo(name = "receipt_accessed_at") val accessedAt: Long?,
 )
 
 @Entity(

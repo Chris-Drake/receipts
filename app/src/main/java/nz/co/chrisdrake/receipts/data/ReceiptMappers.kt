@@ -18,6 +18,7 @@ fun ReceiptEntity.toDomain(items: List<ReceiptItemEntity>): Receipt {
         backUpStatus = backupStatus,
         createdAt = createdAt,
         updatedAt = updatedAt,
+        accessedAt = accessedAt,
     )
 }
 
@@ -44,6 +45,7 @@ fun Receipt.toEntity(): ReceiptWithItemsEntity {
             backupStatus = backUpStatus,
             createdAt = createdAt,
             updatedAt = updatedAt,
+            accessedAt = accessedAt,
         ),
         items = items.map { it.toEntity(id) },
     )
@@ -94,5 +96,6 @@ fun RemoteReceiptEntity.toDomain(): Receipt {
         createdAt = createdAt,
         updatedAt = updatedAt,
         backUpStatus = BackupStatus.Completed,
+        accessedAt = null,
     )
 }
