@@ -12,6 +12,9 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import nz.co.chrisdrake.receipts.data.ReceiptRepository
 import nz.co.chrisdrake.receipts.domain.auth.GetCurrentUser
+import nz.co.chrisdrake.receipts.domain.model.BackupStatus.Failed
+import nz.co.chrisdrake.receipts.domain.model.BackupStatus.InProgress
+import nz.co.chrisdrake.receipts.domain.model.BackupStatus.NotStarted
 import nz.co.chrisdrake.receipts.domain.model.Receipt
 import nz.co.chrisdrake.receipts.util.isUnmeteredNetwork
 import kotlin.coroutines.cancellation.CancellationException
@@ -23,10 +26,15 @@ class BackupReceiptsAsync(
 ) {
     private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
     private val mutex = Mutex()
+    private var firstRun = true
 
     operator fun invoke(receipts: List<Receipt>) = scope.launch {
         mutex.withLock {
             val currentUser = getCurrentUser() ?: return@launch
+
+            if (firstRun) {
+                resetIncompleteBackupStatus(receipts)
+            }
 
             receipts.forEach { receipt ->
                 if (isActive && connectivityManager.isUnmeteredNetwork()) {
@@ -39,6 +47,15 @@ class BackupReceiptsAsync(
                     }
                 }
             }
+
+            firstRun = false
         }
+    }
+
+    private suspend fun resetIncompleteBackupStatus(receipts: List<Receipt>) {
+        receipts
+            .filter { it.backUpStatus == InProgress || it.backUpStatus == Failed }
+            .map { it.copy(backUpStatus = NotStarted) }
+            .let { receiptRepository.updateReceipts(it) }
     }
 }

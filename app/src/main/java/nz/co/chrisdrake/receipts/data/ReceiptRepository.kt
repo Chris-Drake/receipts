@@ -33,7 +33,9 @@ class ReceiptRepository(
     suspend fun backupReceipt(userId: String, id: ReceiptId) {
         val receipt = getReceipt(id) ?: return
 
-        if (receipt.backUpStatus == Completed || receipt.backUpStatus == InProgress) {
+        if (receipt.backUpStatus == Completed
+            || receipt.backUpStatus == InProgress
+            || receipt.backUpStatus == Failed) {
             return
         }
 
@@ -68,6 +70,10 @@ class ReceiptRepository(
         val (receiptEntity, receiptItems) = receipt.toEntity()
 
         dao.updateReceiptWithItems(receiptEntity, receiptItems)
+    }
+
+    suspend fun updateReceipts(receipts: List<Receipt>) {
+        dao.updateReceipts(receipts.map(Receipt::toEntity))
     }
 
     suspend fun deleteReceipt(userId: String?, id: ReceiptId) {
