@@ -11,7 +11,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import nz.co.chrisdrake.receipts.R
 import nz.co.chrisdrake.receipts.ui.theme.AppTheme
 import java.time.LocalTime
 
@@ -29,7 +31,7 @@ fun TimeField(field: TimeFieldState, modifier: Modifier = Modifier) {
     ClickableTextField(
         modifier = modifier,
         value = field.formattedValue,
-        label = { Text("Time") },
+        label = { Text(stringResource(R.string.common_time_dialog_title)) },
         onClick = { showTimePicker = true },
     )
 
@@ -60,14 +62,14 @@ private fun TimePicker(
         text = { androidx.compose.material3.TimePicker(state = state) },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Cancel")
+                Text(stringResource(R.string.common_dialog_cancel))
             }
         },
         confirmButton = {
             TextButton(
                 onClick = { onSet(LocalTime.of(state.hour, state.minute)) }
             ) {
-                Text("Confirm")
+                Text(stringResource(R.string.common_dialog_confirm))
             }
         },
     )

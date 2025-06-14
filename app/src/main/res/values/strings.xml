@@ -1,3 +1,52 @@
 <resources>
     <string name="app_name">Receipts</string>
+
+    <string name="home_title">Receipts</string>
+    <string name="home_no_receipts">No receipts yet</string>
+    <string name="home_date_time_format">%s at %s</string>
+    <plurals name="home_item_count">
+        <item quantity="one">%d item</item>
+        <item quantity="other">%d items</item>
+    </plurals>
+
+    <string name="profile_title">Profile</string>
+    <string name="profile_sign_out_button">Sign Out</string>
+
+    <string name="sign_in_title">Sign In</string>
+    <string name="sign_in_sign_up_button">Sign up as a new user</string>
+
+    <string name="sign_up_title">Sign Up</string>
+    <string name="sign_up_password_confirm_label">Confirm Password</string>
+    <string name="sign_up_passwords_do_not_match">Passwords do not match</string>
+
+    <string name="receipt_title">Receipt</string>
+    <string name="receipt_new_receipt_title">New receipt</string>
+    <string name="receipt_loading_message">Loading…</string>
+    <string name="receipt_image_content_description">Receipt image</string>
+    <string name="receipt_image_open_content_description">Open receipt image</string>
+    <string name="receipt_merchant_label">Merchant</string>
+    <string name="receipt_items_label">Items</string>
+    <string name="receipt_total_label">Total</string>
+    <string name="receipt_add_item_button">Add Item</string>
+    <string name="receipt_item_label">Item</string>
+    <string name="receipt_amount_label">Amount</string>
+    <string name="receipt_delete_item_button">Delete item</string>
+    <string name="receipt_scanning_message">Scanning…</string>
+    <string name="receipt_saving_message">Saving…</string>
+    <string name="receipt_deleting_message">Deleting…</string>
+
+    <string name="common_email_label">Email</string>
+    <string name="common_password_label">Password</string>
+    <string name="common_input_field_required">Required</string>
+    <string name="common_date_dialog_title">Date</string>
+    <string name="common_time_dialog_title">Time</string>
+    <string name="common_dialog_confirm">Confirm</string>
+    <string name="common_dialog_cancel">Cancel</string>
+    <string name="common_close">Close</string>
+    <string name="common_back">Back</string>
+    <string name="common_save">Save</string>
+    <string name="common_edit">Edit</string>
+    <string name="common_delete">Delete</string>
+    <string name="common_add">Add</string>
+    <string name="common_search">Search</string>
 </resources>

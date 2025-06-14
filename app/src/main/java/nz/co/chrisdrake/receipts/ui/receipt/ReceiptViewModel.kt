@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import nz.co.chrisdrake.receipts.DependencyRegistry.get
+import nz.co.chrisdrake.receipts.R
 import nz.co.chrisdrake.receipts.domain.DeleteReceipt
 import nz.co.chrisdrake.receipts.domain.GetOriginalImageUri
 import nz.co.chrisdrake.receipts.domain.GetReceipt
@@ -28,6 +29,7 @@ import nz.co.chrisdrake.receipts.ui.common.InputFieldState
 import nz.co.chrisdrake.receipts.ui.common.TimeFieldState
 import nz.co.chrisdrake.receipts.ui.receipt.ReceiptViewState.Details
 import nz.co.chrisdrake.receipts.ui.receipt.ReceiptViewState.Item
+import nz.co.chrisdrake.receipts.util.ResourceProvider
 import java.time.LocalDate
 import java.time.LocalTime
 import java.util.UUID
@@ -44,13 +46,18 @@ class ReceiptViewModel(
     private val saveReceipt: SaveReceipt = get(),
     private val updateReceipt: UpdateReceipt = get(),
     private val deleteReceipt: DeleteReceipt = get(),
+    private val resourceProvider: ResourceProvider = get(),
 ) : ViewModel() {
 
     private var existingReceipt: Receipt? = null
 
     private val _viewState = MutableStateFlow(
         ReceiptViewState(
-            title = if (existingId == null) "New Receipt" else "Receipt",
+            title = if (existingId == null) {
+                resourceProvider.getString(R.string.receipt_new_receipt_title)
+            } else {
+                resourceProvider.getString(R.string.receipt_title)
+            },
             createTempImageUri = { getTempImageUri() },
             onPictureResult = ::onPictureResult,
             deleteVisible = existingId != null,
@@ -65,7 +72,7 @@ class ReceiptViewModel(
     }
 
     private fun loadExistingReceipt(id: ReceiptId) {
-        _viewState.update { it.copy(loadingMessage = "Loading…") }
+        _viewState.update { it.copy(loadingMessage = resourceProvider.getString(R.string.receipt_loading_message)) }
 
         viewModelScope.launch {
             existingReceipt = getReceipt(id = id).also {
@@ -100,7 +107,7 @@ class ReceiptViewModel(
                 details = Details(
                     imageUri = imageUri,
                     merchant = InputFieldState(
-                        label = "Merchant",
+                        label = resourceProvider.getString(R.string.receipt_merchant_label),
                         value = receipt?.merchant ?: "",
                         onValueChanged = ::onMerchantChanged
                     ),
@@ -130,7 +137,7 @@ class ReceiptViewModel(
     }
 
     private fun attemptScan(imageUri: Uri) = viewModelScope.launch {
-        _viewState.update { it.copy(loadingMessage = "Scanning…") }
+        _viewState.update { it.copy(loadingMessage = resourceProvider.getString(R.string.receipt_scanning_message)) }
 
         try {
             val scanResult = scanImage(imageUri = imageUri)
@@ -173,7 +180,7 @@ class ReceiptViewModel(
             ?: return
 
         viewModelScope.launch {
-            _viewState.update { it.copy(loadingMessage = "Saving…") }
+            _viewState.update { it.copy(loadingMessage = resourceProvider.getString(R.string.receipt_saving_message)) }
 
             val id = existingReceipt?.id ?: UUID.randomUUID().toString()
             val imageFilePaths = copyImagesToInternalStorage(uri = details.imageUri, receiptId = id)
@@ -211,7 +218,7 @@ class ReceiptViewModel(
     }
 
     private fun onClickDelete() {
-        _viewState.update { it.copy(loadingMessage = "Deleting…") }
+        _viewState.update { it.copy(loadingMessage = resourceProvider.getString(R.string.receipt_deleting_message)) }
 
         viewModelScope.launch {
             try {
@@ -255,14 +262,14 @@ class ReceiptViewModel(
         return Item(
             id = id,
             name = InputFieldState(
-                label = "Item",
+                label = resourceProvider.getString(R.string.receipt_item_label),
                 value = from?.name ?: "",
                 onValueChanged = { value ->
                     updateItem(id) { it.copy(name = it.name.copy(value = value, error = null)) }
                 }
             ),
             amount = InputFieldState(
-                label = "Amount",
+                label = resourceProvider.getString(R.string.receipt_amount_label),
                 value = from?.amount?.toString() ?: "",
                 onValueChanged = { value ->
                     if (value.isNotEmpty() && value.toBigDecimalOrNull() == null) {
@@ -327,6 +334,8 @@ class ReceiptViewModel(
 
     private fun errorIfNull(value: Any?): String? = errorIf(value == null)
 
-    private fun errorIf(condition: Boolean, errorMessage: String = "Required"): String? =
-        if (condition) errorMessage else null
+    private fun errorIf(
+        condition: Boolean,
+        errorMessage: String = resourceProvider.getString(R.string.common_input_field_required),
+    ): String? = if (condition) errorMessage else null
 }

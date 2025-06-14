@@ -7,26 +7,29 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import nz.co.chrisdrake.receipts.DependencyRegistry.get
+import nz.co.chrisdrake.receipts.R
 import nz.co.chrisdrake.receipts.domain.auth.SignUp
 import nz.co.chrisdrake.receipts.ui.common.InputFieldState
+import nz.co.chrisdrake.receipts.util.ResourceProvider
 import kotlin.coroutines.cancellation.CancellationException
 
 class SignUpViewModel(
     private val signUp: SignUp = get(),
+    private val resourceProvider: ResourceProvider = get(),
 ) : ViewModel() {
 
     private val _viewState = MutableStateFlow(
         SignUpViewState(
             email = InputFieldState(
-                label = "Email",
+                label = resourceProvider.getString(R.string.common_email_label),
                 onValueChanged = ::onEmailChanged
             ),
             password = InputFieldState(
-                label = "Password",
+                label = resourceProvider.getString(R.string.common_password_label),
                 onValueChanged = ::onPasswordChanged
             ),
             confirmPassword = InputFieldState(
-                label = "Confirm Password",
+                label = resourceProvider.getString(R.string.sign_up_password_confirm_label),
                 onValueChanged = ::onConfirmPasswordChanged
             ),
             onClickSignUp = ::attemptSignUp,
@@ -69,22 +72,28 @@ class SignUpViewModel(
         val confirmPassword = currentState.confirmPassword.value
 
         if (email.isEmpty()) {
-            _viewState.update { it.copy(email = it.email.copy(error = "Required")) }
+            _viewState.update { it.copy(email = it.email.copy(error = resourceProvider.getString(R.string.common_input_field_required))) }
             return
         }
 
         if (password.isEmpty()) {
-            _viewState.update { it.copy(password = it.password.copy(error = "Required")) }
+            _viewState.update {
+                it.copy(password = it.password.copy(error = resourceProvider.getString(R.string.common_input_field_required)))
+            }
             return
         }
 
         if (confirmPassword.isEmpty()) {
-            _viewState.update { it.copy(confirmPassword = it.confirmPassword.copy(error = "Required")) }
+            _viewState.update {
+                it.copy(confirmPassword = it.confirmPassword.copy(error = resourceProvider.getString(R.string.common_input_field_required)))
+            }
             return
         }
 
         if (password != confirmPassword) {
-            _viewState.update { it.copy(confirmPassword = it.confirmPassword.copy(error = "Passwords do not match")) }
+            _viewState.update {
+                it.copy(confirmPassword = it.confirmPassword.copy(error = resourceProvider.getString(R.string.sign_up_passwords_do_not_match)))
+            }
             return
         }
 

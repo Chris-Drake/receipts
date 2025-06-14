@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import nz.co.chrisdrake.receipts.DependencyRegistry.get
+import nz.co.chrisdrake.receipts.R
 import nz.co.chrisdrake.receipts.domain.GetReceipts
 import nz.co.chrisdrake.receipts.domain.PerformSync
 import nz.co.chrisdrake.receipts.domain.SearchReceipts
@@ -14,10 +15,12 @@ import nz.co.chrisdrake.receipts.domain.model.Receipt
 import nz.co.chrisdrake.receipts.ui.common.DATE_FORMATTER
 import nz.co.chrisdrake.receipts.ui.common.TIME_FORMATTER
 import nz.co.chrisdrake.receipts.ui.home.search.SearchBarState
+import nz.co.chrisdrake.receipts.util.ResourceProvider
 
 class HomeViewModel(
     private val getReceipts: GetReceipts = get(),
     private val searchReceipts: SearchReceipts = get(),
+    private val resourceProvider: ResourceProvider = get(),
     performSync: PerformSync = get(),
 ) : ViewModel() {
 
@@ -76,8 +79,10 @@ class HomeViewModel(
             id = id,
             imageUri = checkNotNull(imageFilePaths).thumbnail,
             merchant = merchant,
-            dateTime = time?.let { "$date at $time" } ?: date,
-            itemCount = "${items.size} item${if (items.size == 1) "" else "s"}",
+            dateTime = time
+                ?.let { resourceProvider.getString(R.string.home_date_time_format, date, time) }
+                ?: date,
+            itemCount = resourceProvider.getQuantityString(R.plurals.home_item_count, items.size, items.size),
             totalAmount = "$${totalAmount}",
             backupStatus = backUpStatus,
         )

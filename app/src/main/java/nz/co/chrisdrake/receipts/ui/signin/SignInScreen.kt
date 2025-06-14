@@ -28,10 +28,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalAutofillManager
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.serialization.Serializable
+import nz.co.chrisdrake.receipts.R
 import nz.co.chrisdrake.receipts.ui.common.EmailInputField
 import nz.co.chrisdrake.receipts.ui.common.InputFieldState
 import nz.co.chrisdrake.receipts.ui.common.PasswordInputField
@@ -104,7 +106,7 @@ private fun Content(
                 if (viewState.loading) {
                     CircularProgressIndicator(modifier = Modifier.size(24.dp))
                 } else {
-                    Text("Sign In")
+                    Text(stringResource(R.string.sign_in_title))
                 }
             }
 
@@ -112,7 +114,7 @@ private fun Content(
                 onClick = navigateToSignUp,
                 modifier = Modifier.align(Alignment.CenterHorizontally),
             ) {
-                Text("Sign up as a new user")
+                Text(stringResource(R.string.sign_in_sign_up_button))
             }
         }
     }
@@ -123,13 +125,13 @@ private fun Content(
 private fun TopBar(dismiss: () -> Unit) {
     TopAppBar(
         title = {
-            Text(text = "Sign In")
+            Text(text = stringResource(R.string.sign_in_title))
         },
         navigationIcon = {
             IconButton(onClick = dismiss) {
                 Icon(
                     imageVector = Icons.Default.Close,
-                    contentDescription = "Close",
+                    contentDescription = stringResource(R.string.common_close),
                 )
             }
         },
@@ -142,8 +144,8 @@ private fun Preview_Content() {
     AppTheme {
         Content(
             viewState = SignInViewState(
-                email = InputFieldState(label = "Email", onValueChanged = {}),
-                password = InputFieldState(label = "Password", onValueChanged = {}),
+                email = InputFieldState(label = stringResource(R.string.common_email_label), onValueChanged = {}),
+                password = InputFieldState(label = stringResource(R.string.common_password_label), onValueChanged = {}),
                 onClickSignIn = {},
             ),
             navigateBack = {},
@@ -159,8 +161,8 @@ private fun Preview_Content_Loading() {
         Content(
             viewState = SignInViewState(
                 loading = true,
-                email = InputFieldState(label = "Email", onValueChanged = {}),
-                password = InputFieldState(label = "Password", onValueChanged = {}),
+                email = InputFieldState(label = stringResource(R.string.common_email_label), onValueChanged = {}),
+                password = InputFieldState(label = stringResource(R.string.common_password_label), onValueChanged = {}),
                 onClickSignIn = {},
             ),
             navigateBack = {},
@@ -176,8 +178,16 @@ private fun Preview_Content_Error() {
         Content(
             viewState = SignInViewState(
                 errorMessage = "Error",
-                email = InputFieldState(label = "Email", onValueChanged = {}, error = "Required"),
-                password = InputFieldState(label = "Password", onValueChanged = {}, error = "Required"),
+                email = InputFieldState(
+                    label = stringResource(R.string.common_email_label),
+                    onValueChanged = {},
+                    error = stringResource(R.string.common_input_field_required),
+                ),
+                password = InputFieldState(
+                    label = stringResource(R.string.common_password_label),
+                    onValueChanged = {},
+                    error = stringResource(R.string.common_input_field_required),
+                ),
                 onClickSignIn = {},
             ),
             navigateBack = {},

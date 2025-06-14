@@ -28,10 +28,12 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.serialization.Serializable
+import nz.co.chrisdrake.receipts.R
 import nz.co.chrisdrake.receipts.domain.model.ReceiptId
 import nz.co.chrisdrake.receipts.ui.home.search.SearchBar
 import nz.co.chrisdrake.receipts.ui.home.search.SearchBarState
@@ -82,7 +84,7 @@ private fun Content(
                 FloatingActionButton(onClick = { navigateToReceipt(null) }) {
                     Icon(
                         imageVector = Icons.Default.Add,
-                        contentDescription = "Add",
+                        contentDescription = stringResource(R.string.common_add),
                     )
                 }
             }
@@ -133,20 +135,20 @@ private fun TopBar(
 ) {
     CenterAlignedTopAppBar(
         title = {
-            Text(text = "Receipts")
+            Text(text = stringResource(R.string.home_title))
         },
         actions = {
             IconButton(onClick = onClickSearch) {
                 Icon(
                     imageVector = Icons.Default.Search,
-                    contentDescription = "Search",
+                    contentDescription = stringResource(R.string.common_search),
                 )
             }
 
             IconButton(onClick = onClickProfile) {
                 Icon(
                     imageVector = Icons.Default.Person,
-                    contentDescription = "Profile",
+                    contentDescription = stringResource(R.string.profile_title),
                 )
             }
         },
@@ -162,7 +164,7 @@ private fun EmptyState(
         contentAlignment = Alignment.Center,
     ) {
         Text(
-            text = "No receipts yet",
+            text = stringResource(R.string.home_no_receipts),
             style = MaterialTheme.typography.bodyLarge,
         )
     }

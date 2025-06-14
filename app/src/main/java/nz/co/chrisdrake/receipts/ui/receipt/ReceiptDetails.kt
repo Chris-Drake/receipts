@@ -34,10 +34,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import nz.co.chrisdrake.receipts.R
 import nz.co.chrisdrake.receipts.ui.common.DateField
 import nz.co.chrisdrake.receipts.ui.common.DateFieldState
 import nz.co.chrisdrake.receipts.ui.common.InputField
@@ -91,7 +93,7 @@ private fun ReceiptImage(
     Box(modifier = modifier) {
         AsyncImage(
             model = uri,
-            contentDescription = "Receipt image",
+            contentDescription = stringResource(R.string.receipt_image_content_description),
             modifier = Modifier
                 .height(280.dp)
                 .clip(RoundedCornerShape(16.dp))
@@ -108,7 +110,7 @@ private fun ReceiptImage(
         ) {
             Icon(
                 imageVector = Icons.Default.OpenInFull,
-                contentDescription = "Open receipt image",
+                contentDescription = stringResource(R.string.receipt_image_open_content_description),
             )
         }
     }
@@ -169,7 +171,7 @@ private fun EditableDetailsSection(viewState: Details) {
 @Composable
 private fun ColumnScope.ItemsSection(viewState: Details) {
     Text(
-        text = "Items",
+        text = stringResource(R.string.receipt_items_label),
         style = typography.titleMedium,
     )
 
@@ -180,7 +182,7 @@ private fun ColumnScope.ItemsSection(viewState: Details) {
     AnimatedVisibility(viewState.formattedTotal != null) {
         viewState.formattedTotal?.let {
             LabelValue(
-                label = "Total",
+                label = stringResource(R.string.receipt_total_label),
                 value = it,
                 modifier = Modifier.padding(vertical = if (viewState.editing) 8.dp else 0.dp),
             )
@@ -231,7 +233,7 @@ private fun EditableItem(item: Item) {
         IconButton(onClick = item.onClickDelete) {
             Icon(
                 imageVector = Icons.Default.Delete,
-                contentDescription = "Delete item",
+                contentDescription = stringResource(R.string.receipt_delete_item_button),
             )
         }
     }
@@ -265,7 +267,7 @@ private fun AddItemButton(
             imageVector = Icons.Default.Add,
             contentDescription = null,
         )
-        Text(text = "Add Item")
+        Text(text = stringResource(R.string.receipt_add_item_button))
     }
 }
 
@@ -275,7 +277,7 @@ private fun SaveButton(onClick: () -> Unit) {
         onClick = onClick,
         modifier = Modifier.fillMaxWidth(),
     ) {
-        Text(text = "Save")
+        Text(text = stringResource(R.string.common_save))
     }
 }
 
@@ -285,7 +287,7 @@ private fun EditButton(onClick: () -> Unit) {
         onClick = onClick,
         modifier = Modifier.fillMaxWidth(),
     ) {
-        Text(text = "Edit")
+        Text(text = stringResource(R.string.common_edit))
     }
 }
 

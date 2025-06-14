@@ -35,10 +35,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.serialization.Serializable
+import nz.co.chrisdrake.receipts.R
 import nz.co.chrisdrake.receipts.domain.model.ReceiptId
 import nz.co.chrisdrake.receipts.ui.theme.AppTheme
 
@@ -137,7 +139,7 @@ private fun TopBar(
             IconButton(onClick = dismiss) {
                 Icon(
                     imageVector = Icons.Default.Close,
-                    contentDescription = "Close",
+                    contentDescription = stringResource(R.string.common_close),
                 )
             }
         },
@@ -146,7 +148,7 @@ private fun TopBar(
                 IconButton(onClick = onClickDelete, enabled = actionsEnabled) {
                     Icon(
                         imageVector = Icons.Default.Delete,
-                        contentDescription = "Delete",
+                        contentDescription = stringResource(R.string.common_delete),
                     )
                 }
             }
@@ -187,7 +189,7 @@ private fun Preview_ReceiptContent() {
         ReceiptContent(
             id = null,
             viewState = ReceiptViewState(
-                title = "New receipt",
+                title = stringResource(R.string.receipt_new_receipt_title),
                 createTempImageUri = { Uri.EMPTY },
                 onPictureResult = { _, _ -> },
                 details = null,
@@ -205,9 +207,8 @@ private fun Preview_ReceiptContent_Loading() {
     AppTheme {
         Scaffold {
             Box(modifier = Modifier.padding(it)) {
-                LoadingDialog("Loading…")
+                LoadingDialog(stringResource(R.string.receipt_loading_message))
             }
         }
     }
 }
-

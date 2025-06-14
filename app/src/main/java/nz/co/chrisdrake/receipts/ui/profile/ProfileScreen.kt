@@ -26,10 +26,12 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.serialization.Serializable
+import nz.co.chrisdrake.receipts.R
 import nz.co.chrisdrake.receipts.ui.theme.AppTheme
 
 @Serializable
@@ -72,7 +74,7 @@ private fun Content(
                 .padding(16.dp),
         ) {
             Text(
-                text = "Email",
+                text = stringResource(R.string.common_email_label),
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -94,7 +96,7 @@ private fun Content(
                 if (viewState.loading) {
                     CircularProgressIndicator(modifier = Modifier.size(24.dp))
                 } else {
-                    Text("Sign Out")
+                    Text(stringResource(R.string.profile_sign_out_button))
                 }
             }
 
@@ -118,13 +120,13 @@ private fun Content(
 private fun TopBar(dismiss: () -> Unit) {
     TopAppBar(
         title = {
-            Text(text = "Profile")
+            Text(text = stringResource(R.string.profile_title))
         },
         navigationIcon = {
             IconButton(onClick = dismiss) {
                 Icon(
                     imageVector = Icons.Default.Close,
-                    contentDescription = "Close",
+                    contentDescription = stringResource(R.string.common_close),
                 )
             }
         },

@@ -7,22 +7,25 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import nz.co.chrisdrake.receipts.DependencyRegistry.get
+import nz.co.chrisdrake.receipts.R
 import nz.co.chrisdrake.receipts.domain.auth.SignIn
 import nz.co.chrisdrake.receipts.ui.common.InputFieldState
+import nz.co.chrisdrake.receipts.util.ResourceProvider
 import kotlin.coroutines.cancellation.CancellationException
 
 class SignInViewModel(
     private val signIn: SignIn = get(),
+    private val resourceProvider: ResourceProvider = get(),
 ) : ViewModel() {
 
     private val _viewState = MutableStateFlow(
         SignInViewState(
             email = InputFieldState(
-                label = "Email",
+                label = resourceProvider.getString(R.string.common_email_label),
                 onValueChanged = ::onEmailChanged
             ),
             password = InputFieldState(
-                label = "Password",
+                label = resourceProvider.getString(R.string.common_password_label),
                 onValueChanged = ::onPasswordChanged
             ),
             onClickSignIn = ::attemptSignIn,
@@ -55,12 +58,14 @@ class SignInViewModel(
         val password = currentState.password.value
 
         if (email.isEmpty()) {
-            _viewState.update { it.copy(email = it.email.copy(error = "Required")) }
+            _viewState.update { it.copy(email = it.email.copy(error = resourceProvider.getString(R.string.common_input_field_required))) }
             return
         }
 
         if (password.isEmpty()) {
-            _viewState.update { it.copy(password = it.password.copy(error = "Required")) }
+            _viewState.update {
+                it.copy(password = it.password.copy(error = resourceProvider.getString(R.string.common_input_field_required)))
+            }
             return
         }
 

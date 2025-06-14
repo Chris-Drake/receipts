@@ -18,8 +18,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import nz.co.chrisdrake.receipts.R
 import nz.co.chrisdrake.receipts.domain.model.ReceiptId
 import nz.co.chrisdrake.receipts.ui.home.ReceiptListItem
 import nz.co.chrisdrake.receipts.ui.home.preview_ReceiptListItem
@@ -62,12 +64,12 @@ private fun SearchBarInputField(
         onSearch = {},
         expanded = expanded,
         onExpandedChange = onExpandedChange,
-        placeholder = { Text("Search") },
+        placeholder = { Text(stringResource(R.string.common_search)) },
         leadingIcon = {
             IconButton(onClick = { onExpandedChange(false) }) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Default.ArrowBack,
-                    contentDescription = "Back"
+                    contentDescription = stringResource(R.string.common_back)
                 )
             }
         },

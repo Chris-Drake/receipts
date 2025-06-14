@@ -27,6 +27,7 @@ import nz.co.chrisdrake.receipts.domain.image.GetTempImageUri
 import nz.co.chrisdrake.receipts.domain.image.GetUriForFile
 import nz.co.chrisdrake.receipts.domain.image.OpenImage
 import nz.co.chrisdrake.receipts.domain.image.ScanImage
+import nz.co.chrisdrake.receipts.util.ResourceProvider
 import kotlin.reflect.KClass
 
 object DependencyRegistry {
@@ -38,6 +39,8 @@ object DependencyRegistry {
     inline fun <reified T : Any> get(): T = dependencies.getValue(T::class).value as T
 
     fun registerApplicationDependencies(application: Application) {
+        register<ResourceProvider> { ResourceProvider(resources = application.resources) }
+
         register { UserPreferencesRepository(context = application) }
 
         register {

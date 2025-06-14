@@ -5,10 +5,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
@@ -26,10 +26,12 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalAutofillManager
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.serialization.Serializable
+import nz.co.chrisdrake.receipts.R
 import nz.co.chrisdrake.receipts.ui.common.EmailInputField
 import nz.co.chrisdrake.receipts.ui.common.InputFieldState
 import nz.co.chrisdrake.receipts.ui.common.PasswordInputField
@@ -102,7 +104,7 @@ private fun Content(
                 if (viewState.loading) {
                     CircularProgressIndicator(modifier = Modifier.size(24.dp))
                 } else {
-                    Text("Sign Up")
+                    Text(stringResource(R.string.sign_up_title))
                 }
             }
         }
@@ -114,13 +116,13 @@ private fun Content(
 private fun TopBar(dismiss: () -> Unit) {
     TopAppBar(
         title = {
-            Text(text = "Sign Up")
+            Text(text = stringResource(R.string.sign_up_title))
         },
         navigationIcon = {
             IconButton(onClick = dismiss) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Default.ArrowBack,
-                    contentDescription = "Back",
+                    contentDescription = stringResource(R.string.common_back),
                 )
             }
         },
@@ -133,9 +135,9 @@ private fun Preview_Content() {
     AppTheme {
         Content(
             viewState = SignUpViewState(
-                email = InputFieldState(label = "Email", onValueChanged = {}),
-                password = InputFieldState(label = "Password", onValueChanged = {}),
-                confirmPassword = InputFieldState(label = "Confirm Password", onValueChanged = {}),
+                email = InputFieldState(label = stringResource(R.string.common_email_label), onValueChanged = {}),
+                password = InputFieldState(label = stringResource(R.string.common_password_label), onValueChanged = {}),
+                confirmPassword = InputFieldState(label = stringResource(R.string.sign_up_password_confirm_label), onValueChanged = {}),
                 onClickSignUp = {},
             ),
             navigateBack = {},
@@ -150,9 +152,9 @@ private fun Preview_Content_Loading() {
         Content(
             viewState = SignUpViewState(
                 loading = true,
-                email = InputFieldState(label = "Email", onValueChanged = {}),
-                password = InputFieldState(label = "Password", onValueChanged = {}),
-                confirmPassword = InputFieldState(label = "Confirm Password", onValueChanged = {}),
+                email = InputFieldState(label = stringResource(R.string.common_email_label), onValueChanged = {}),
+                password = InputFieldState(label = stringResource(R.string.common_password_label), onValueChanged = {}),
+                confirmPassword = InputFieldState(label = stringResource(R.string.sign_up_password_confirm_label), onValueChanged = {}),
                 onClickSignUp = {},
             ),
             navigateBack = {},
@@ -167,9 +169,21 @@ private fun Preview_Content_Error() {
         Content(
             viewState = SignUpViewState(
                 errorMessage = "Error",
-                email = InputFieldState(label = "Email", onValueChanged = {}, error = "Required"),
-                password = InputFieldState(label = "Password", onValueChanged = {}, error = "Required"),
-                confirmPassword = InputFieldState(label = "Confirm Password", onValueChanged = {}, error = "Required"),
+                email = InputFieldState(
+                    label = stringResource(R.string.common_email_label),
+                    onValueChanged = {},
+                    error = stringResource(R.string.common_input_field_required),
+                ),
+                password = InputFieldState(
+                    label = stringResource(R.string.common_password_label),
+                    onValueChanged = {},
+                    error = stringResource(R.string.common_input_field_required),
+                ),
+                confirmPassword = InputFieldState(
+                    label = stringResource(R.string.sign_up_password_confirm_label),
+                    onValueChanged = {},
+                    error = stringResource(R.string.common_input_field_required),
+                ),
                 onClickSignUp = {},
             ),
             navigateBack = {},

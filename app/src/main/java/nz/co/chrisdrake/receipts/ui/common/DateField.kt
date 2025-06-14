@@ -11,7 +11,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import nz.co.chrisdrake.receipts.R
 import nz.co.chrisdrake.receipts.ui.theme.AppTheme
 import java.time.Instant
 import java.time.LocalDate
@@ -33,7 +35,7 @@ fun DateField(field: DateFieldState, modifier: Modifier = Modifier) {
     ClickableTextField(
         modifier = modifier,
         value = field.formattedValue,
-        label = { Text("Date") },
+        label = { Text(stringResource(R.string.common_date_dialog_title)) },
         error = field.error,
         onClick = { showDatePicker = true },
     )
@@ -71,12 +73,12 @@ private fun DatePicker(
                     onSet(selectedDate)
                 }
             ) {
-                Text("Confirm")
+                Text(stringResource(R.string.common_dialog_confirm))
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Cancel")
+                Text(stringResource(R.string.common_dialog_cancel))
             }
         },
     ) {
