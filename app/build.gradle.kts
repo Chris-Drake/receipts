@@ -12,6 +12,7 @@ plugins {
 android {
     namespace = "nz.co.chrisdrake.receipts"
     compileSdk = libs.versions.compileSdk.get().toInt()
+    compileSdkMinor = libs.versions.compileSdkMinor.get().toInt()
 
     defaultConfig {
         applicationId = (project.property("BASE_APPLICATION_ID") as String) + ".receipts"
